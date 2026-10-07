@@ -1,21 +1,78 @@
-import { MagneticLink, SignalField } from "./HomeMotion";
-import styles from "./HomeInterior.module.css";
+import { RiseLine } from "@/components/site/Reveal";
+import { Marquee } from "@/components/ui/Marquee";
+import { MagneticLink } from "./HomeMotion";
+import styles from "./Interior.module.css";
 
+/**
+ * 06 — THE NEXT CHAPTER
+ * The page's one colour moment: the whole section flips to brand blue and the
+ * CTAs go white. The brochure card lifts and straightens under the pointer.
+ */
 export function JoinPanel() {
   return (
-    <section id="join" aria-labelledby="join-title" className={`hv-section ${styles.join}`}>
+    <section id="join" aria-labelledby="join-title" className={`hv-section ${styles.section} ${styles.brand}`}>
       <span id="involved" className={styles.hashAlias} aria-hidden="true" />
-      <SignalField className={styles.joinField} strength={85}>
-        <div className={styles.joinOrb} aria-hidden="true"><span /><span /><span /></div>
-        <div className="hv-container">
-          <div className={styles.chapterLabel}><p className="hv-eyebrow">06 / Keep the conversation moving</p><span>HR VISTA 3.0 ↗</span></div>
-          <h2 id="join-title" className={styles.joinTitle}>THE NEXT<br /><span>CHAPTER.</span></h2>
-          <div className={styles.joinGrid}>
-            <div className={styles.joinCopy}><p className={styles.joinCity}>MUMBAI / 2026</p><p className="hv-copy">New ground. More perspectives. A shared future of work. Explore the vision for HR VISTA 3.0 in the brochure, or follow the conversations that brought us here.</p><div className={styles.joinActions}><MagneticLink href="/brochure" className={`hv-button hv-button--light ${styles.joinPrimary}`}>Read the brochure <span aria-hidden="true">↗</span></MagneticLink><MagneticLink href="/work" className={`hv-button ${styles.participationTrigger}`}>Revisit the editions <span aria-hidden="true">↗</span></MagneticLink></div><p className={styles.joinDate}>21–22 November 2026<br /><span>Mumbai · BKC · Jio Grounds</span></p></div>
-            <MagneticLink href="/brochure" className={styles.brochurePreview} label="Preview the 12-page HR VISTA 3.0 brochure"><span id="brochure" className={styles.brochureAlias} /><div className={styles.brochureImage}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src="/brochure/page-01.png" alt="Cover of the HR VISTA 3.0 brochure" width={834} height={1053} loading="lazy" /></div><div className={styles.brochureCaption}><span>KEEP EXPLORING</span><strong>The HR VISTA<br />3.0 brochure</strong><p>12 pages · Read online</p><span className={styles.brochureArrow} aria-hidden="true">↗</span></div></MagneticLink>
-          </div>
+
+      <div className={styles.opener}>
+        <Marquee
+          items={["KEEP THE CONVERSATION MOVING", "MUMBAI 2026", "KEEP THE CONVERSATION MOVING", "MUMBAI 2026"]}
+          speed={40}
+          reverse
+          velocitySkew
+          itemPadding="0 0.35em"
+          className={styles.openerItem}
+        />
+      </div>
+
+      <div className="hv-container">
+        <div className={styles.chapterRow}>
+          <p className="hv-eyebrow" style={{ color: "#dfe7ff" }}>06 / Keep the conversation moving</p>
+          <p className={styles.chapterNote}>HR VISTA 3.0</p>
         </div>
-      </SignalField>
+
+        <h2 id="join-title" className={styles.giant}>
+          <RiseLine as="span" className={styles.giantLine} y={88}>THE NEXT</RiseLine>
+          <RiseLine as="span" className={`${styles.giantLine} ${styles.outline}`} delay={0.12} y={88}>CHAPTER.</RiseLine>
+        </h2>
+
+        <div className={styles.joinGrid} style={{ marginTop: "clamp(40px, 6vw, 80px)" }}>
+          <div>
+            <p className={styles.audienceFocus} style={{ color: "#dfe7ff" }}>MUMBAI / 2026</p>
+            <p className={`hv-copy ${styles.copy}`} style={{ maxWidth: "52ch", marginTop: 14 }}>
+              New ground. More perspectives. A shared future of work. Explore the vision for HR
+              VISTA 3.0 in the brochure, or follow the conversations that brought us here.
+            </p>
+            <div className={styles.joinActions}>
+              <MagneticLink href="/brochure" className="hv-button hv-button--light">
+                Read the brochure <span aria-hidden="true">↗</span>
+              </MagneticLink>
+              <MagneticLink href="/work" className={`hv-button ${styles.ghostButton}`}>
+                Revisit the editions <span aria-hidden="true">↗</span>
+              </MagneticLink>
+            </div>
+            <p className={styles.joinDate}>
+              21–22 November 2026
+              <br />
+              <span>Mumbai · BKC · Jio Grounds</span>
+            </p>
+          </div>
+
+          <MagneticLink
+            href="/brochure"
+            className={styles.brochureCard}
+            label="Preview the 12-page HR VISTA 3.0 brochure"
+          >
+            <span id="brochure" className={styles.hashAlias} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brochure/page-01.png" alt="Cover of the HR VISTA 3.0 brochure" width={834} height={1053} loading="lazy" />
+            <span className={styles.brochureCaption}>
+              <span>Keep exploring</span>
+              <strong>The HR VISTA 3.0 brochure</strong>
+              <span>12 pages · Read online</span>
+            </span>
+          </MagneticLink>
+        </div>
+      </div>
     </section>
   );
 }

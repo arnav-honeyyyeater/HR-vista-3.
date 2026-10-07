@@ -2,42 +2,90 @@
 
 import { useState } from "react";
 import { content } from "@/lib/data/content";
-import { MagneticLink, SignalField } from "./HomeMotion";
-import styles from "./HomeInterior.module.css";
+import { RiseLine } from "@/components/site/Reveal";
+import { Marquee } from "@/components/ui/Marquee";
+import { MagneticLink } from "./HomeMotion";
+import styles from "./Interior.module.css";
 
 const pathways = [
-  { label: "Corporate leaders", slug: "corporate-leaders", prompt: "Bring your leadership perspective.", focus: "Leadership · Future of work · Emerging talent" },
-  { label: "HR professionals", slug: "hr-professionals", prompt: "Connect practice with fresh perspectives.", focus: "People practices · Knowledge exchange · Professional connections" },
-  { label: "Organisations", slug: "organisations", prompt: "Start a conversation with the HR ecosystem.", focus: "Employer visibility · Industry engagement · Talent connections" },
-  { label: "Students", slug: "students", prompt: "Take your learning beyond the classroom.", focus: "Industry exposure · Career awareness · Professional connections" },
-  { label: "Academia", slug: "academia", prompt: "Build a bridge between learning and practice.", focus: "Management education · Research · Industry perspectives" },
+  { label: "Corporate leaders", prompt: "Bring your leadership perspective.", focus: "Leadership · Future of work · Emerging talent" },
+  { label: "HR professionals", prompt: "Connect practice with fresh perspectives.", focus: "People practices · Knowledge exchange · Professional connections" },
+  { label: "Organisations", prompt: "Start a conversation with the HR ecosystem.", focus: "Employer visibility · Industry engagement · Talent connections" },
+  { label: "Students", prompt: "Take your learning beyond the classroom.", focus: "Industry exposure · Career awareness · Professional connections" },
+  { label: "Academia", prompt: "Build a bridge between learning and practice.", focus: "Management education · Research · Industry perspectives" },
 ];
 
+/**
+ * 03 — YOUR PERSPECTIVE
+ * Five full-width rows. Opening one grows its panel in place — the page never
+ * jumps, the row simply becomes the focus. Keyboard and touch get the same
+ * behaviour as hover, via real buttons.
+ */
 export function AudienceValue() {
-  const [selected, setSelected] = useState(1);
-  const pathway = pathways[selected];
+  const [open, setOpen] = useState(1);
+
   return (
-    <section id="audience" aria-labelledby="audience-title" className={`hv-section ${styles.audience}`}>
+    <section id="audience" aria-labelledby="audience-title" className={`hv-section ${styles.section} ${styles.dark}`}>
       <span id="room" className={styles.hashAlias} aria-hidden="true" />
+
+      <div className={styles.opener}>
+        <Marquee
+          items={["YOUR PERSPECTIVE", "A PLACE FOR EVERY VOICE", "YOUR PERSPECTIVE", "A PLACE FOR EVERY VOICE"]}
+          speed={42}
+          velocitySkew
+          itemPadding="0 0.35em"
+          className={styles.openerItem}
+        />
+      </div>
+
       <div className="hv-container">
-        <div className={styles.chapterLabel}><p className="hv-eyebrow">03 / Your perspective matters</p><span>Select your signal ↘</span></div>
-        <h2 id="audience-title" className={styles.audienceTitle}>A PLACE FOR<br /><span>YOUR PERSPECTIVE.</span></h2>
-        <div className={styles.audienceGrid}>
-          <SignalField className={styles.radarField} strength={42}>
-            <div className={styles.radarRings} aria-hidden="true"><span /><span /><span /><i /></div>
-            <div className={styles.radarControls} aria-label="Choose your audience">
-              {pathways.map((item, index) => <button key={item.slug} type="button" aria-pressed={selected === index} aria-controls="audience-pathway" className={`${styles.radarNode} ${styles[`radarNode${index}`]} ${selected === index ? styles.radarNodeActive : ""}`} onClick={() => setSelected(index)}><span aria-hidden="true">0{index + 1}</span><strong>{item.label}</strong></button>)}
+        <div className={styles.chapterRow}>
+          <p className="hv-eyebrow">03 / Your perspective matters</p>
+          <p className={styles.chapterNote}>Choose who you are</p>
+        </div>
+
+        <h2 id="audience-title" className={styles.giant}>
+          <RiseLine as="span" className={styles.giantLine} y={88}>A PLACE FOR</RiseLine>
+          <RiseLine as="span" className={`${styles.giantLine} ${styles.ink}`} delay={0.12} y={88}>YOUR PERSPECTIVE.</RiseLine>
+        </h2>
+
+        <div className={styles.rows} style={{ marginTop: "clamp(40px, 6vw, 80px)", borderTop: "none" }}>
+          {pathways.map((item, index) => (
+            <div key={item.label} className={`${styles.audienceRow} ${open === index ? styles.audienceRowOpen : ""}`}>
+              <button
+                type="button"
+                className={styles.audienceHead}
+                aria-expanded={open === index}
+                aria-controls={`audience-panel-${index}`}
+                onClick={() => setOpen(open === index ? -1 : index)}
+              >
+                <span className={styles.rowNum}>0{index + 1}</span>
+                <span className={styles.audienceLabel}>{item.label}</span>
+                <span className={styles.audiencePrompt}>{item.prompt}</span>
+                <span className={styles.rowIcon} aria-hidden="true" />
+              </button>
+              <div
+                id={`audience-panel-${index}`}
+                className={`${styles.audiencePanel} ${open === index ? styles.audiencePanelOpen : ""}`}
+              >
+                <div className={styles.audiencePanelInner}>
+                  <p className="hv-copy" style={{ margin: 0 }}>
+                    {content.whyHrVista.audiences[index].description}
+                  </p>
+                  <div>
+                    <p className={styles.audienceFocus}>{item.focus}</p>
+                    <MagneticLink
+                      className="hv-button hv-button--light"
+                      href="/brochure?page=11"
+                    >
+                      Explore your perspective
+                      <span aria-hidden="true">↗</span>
+                    </MagneticLink>
+                  </div>
+                </div>
+              </div>
             </div>
-            <aside id="audience-pathway" className={styles.radarCore} aria-label="Your perspective"><span className={styles.coreMark} aria-hidden="true">↗</span><div aria-live="polite" aria-atomic="true"><p>{pathway.label}</p><h3>{pathway.prompt}</h3></div></aside>
-            <div className={styles.radarCoordinate} aria-hidden="true">HUMAN CONNECTION / 03.0</div>
-          </SignalField>
-          <div className={styles.audienceContent}>
-            <p className={styles.audienceIntro}>Different ambitions.<br />One future to shape together.</p>
-            <div className={styles.audienceBenefits} aria-label="Benefits for every audience">{pathways.map((item, index) => <div key={item.slug} className={selected === index ? styles.benefitActive : ""}><span aria-hidden="true">0{index + 1}</span><div><h3>{item.label}</h3><p>{content.whyHrVista.audiences[index].description}</p></div></div>)}</div>
-            <p className={styles.pathwayFocus}>{pathway.focus}</p>
-            <MagneticLink className={`hv-button hv-button--light ${styles.pathwayAction}`} href="/brochure?page=11">Explore your perspective<span aria-hidden="true">↗</span></MagneticLink>
-            <p className={styles.pathwayFootnote}>Read how each audience connects with HR VISTA.</p>
-          </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,34 +1,83 @@
-import Link from "next/link";
-import styles from "./SiteFooter.module.css";
+import { Marquee } from "@/components/ui/Marquee";
+import styles from "./Interior.module.css";
 
+const chapterLinks = [
+  { href: "#overview", label: "The statement" },
+  { href: "#experience", label: "The experience" },
+  { href: "#audience", label: "Your perspective" },
+  { href: "#work", label: "The journey" },
+  { href: "#venue", label: "New ground" },
+  { href: "#join", label: "The next chapter" },
+];
+
+const exploreLinks = [
+  { href: "/work", label: "Editions archive" },
+  { href: "/brochure", label: "Brochure reader" },
+  { href: "/brochure?page=11", label: "Get involved" },
+];
+
+/**
+ * Footer — the wordmark runs as one last marquee, then plain link columns.
+ */
 export function SiteFooter() {
   return (
-    <footer className={["hv", styles.footer].join(" ")}>
+    <footer className={styles.footer}>
+      <div className={styles.footerWord}>
+        <Marquee
+          items={["HR VISTA 3.0", "MUMBAI 2026", "HR VISTA 3.0", "MUMBAI 2026"]}
+          speed={46}
+          velocitySkew
+          itemPadding="0 0.4em"
+          className={styles.openerItem}
+        />
+      </div>
+
       <div className="hv-container">
-        <div className={styles.columns}>
-          <div>
-            <Link className={styles.wordmark} href="/">HR VISTA <span>3.0</span></Link>
-            <p className={styles.description}>The future of work.<br />The people who shape it.</p>
-            <p className={styles.event}>21–22 November 2026<br />BKC · Jio Grounds · Mumbai</p>
+        <div className={styles.footerGrid}>
+          <div className={styles.footerCol}>
+            <h3>Chapters</h3>
+            <ul>
+              {chapterLinks.map((link) => (
+                <li key={link.href}>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
           </div>
-          <nav aria-label="Footer" className={styles.navigation}>
-            <p className={styles.label}>Explore</p>
-            <Link href="/#overview">About the conclave</Link>
-            <Link href="/work">Past editions</Link>
-            <Link href="/brochure">Read the brochure</Link>
-            <Link href="/#experience">Explore the experience ↗</Link>
-          </nav>
-          <div className={styles.presented}>
-            <p className={styles.label}>Presented by</p>
-            <p>Centre for Placement and<br />Career Guidance</p>
-            <p className={styles.institution}>CHRIST (Deemed to be University)<br />Pune Lavasa Campus</p>
-            <Link href="/#venue" className={styles.enquiry}>The institution &amp; the setting ↗</Link>
+          <div className={styles.footerCol}>
+            <h3>Explore</h3>
+            <ul>
+              {exploreLinks.map((link) => (
+                <li key={link.href}>
+                  <a href={link.href}>{link.label}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className={styles.footerCol}>
+            <h3>The conclave</h3>
+            <ul>
+              <li>
+                <a href="https://www.google.com/maps/search/?api=1&query=Jio+Grounds+Bandra+Kurla+Complex+Mumbai">
+                  Jio Grounds, BKC, Mumbai
+                </a>
+              </li>
+              <li>
+                <a href="#top">Back to top</a>
+              </li>
+            </ul>
           </div>
         </div>
-        <div className={styles.signature} aria-hidden="true">HR VISTA<span>3.0</span></div>
-        <div className={styles.bottom}>
-          <p>© 2026 HR VISTA · CHRIST Pune Lavasa Campus</p>
-          <Link href="/#top">Back to the beginning <span aria-hidden="true">↑</span></Link>
+
+        <div className={styles.footerMeta}>
+          <span>
+            CHRIST (Deemed to be University), Pune Lavasa Campus · Centre for Placement and Career
+            Guidance
+          </span>
+          <span>
+            Photographs show previous editions. 500+ professionals and 50+ organisations are
+            projections, not live registrations.
+          </span>
         </div>
       </div>
     </footer>
