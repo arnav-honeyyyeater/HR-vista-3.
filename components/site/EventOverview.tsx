@@ -2,7 +2,9 @@ import { RiseLine, Wipe } from "@/components/site/Reveal";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { Marquee } from "@/components/ui/Marquee";
 import { Counter } from "@/components/ui/Counter";
-import { MagneticLink } from "./HomeMotion";
+import { ScrollVelocitySkew } from "@/components/ui/ScrollVelocity";
+import { MagneticLink, SignalField } from "./HomeMotion";
+import { Tilt } from "./PointerFX";
 import styles from "./Interior.module.css";
 
 const stats: { value: string; label: string }[] = [
@@ -22,6 +24,8 @@ export function EventOverview() {
   return (
     <section id="overview" aria-labelledby="overview-title" className={`hv-section ${styles.section} ${styles.dark}`}>
       <span id="story" className={styles.hashAlias} aria-hidden="true" />
+      <SignalField className={styles.fieldWrap} strength={60}>
+      <span className={styles.pointerGlow} aria-hidden="true" />
 
       <div className={styles.opener}>
         <Marquee
@@ -39,11 +43,13 @@ export function EventOverview() {
           <p className={styles.chapterNote}>HR VISTA 3.0 · Mumbai 2026</p>
         </div>
 
-        <h2 id="overview-title" className={styles.giant}>
-          <RiseLine as="span" className={styles.giantLine} delay={0} y={96}>PEOPLE.</RiseLine>
-          <RiseLine as="span" className={`${styles.giantLine} ${styles.outline}`} delay={0.12} y={96}>IDEAS.</RiseLine>
-          <RiseLine as="span" className={styles.giantLine} delay={0.24} y={96}>FUTURES.</RiseLine>
-        </h2>
+        <ScrollVelocitySkew max={4}>
+          <h2 id="overview-title" className={styles.giant}>
+            <RiseLine as="span" className={styles.giantLine} delay={0} y={96}>PEOPLE.</RiseLine>
+            <RiseLine as="span" className={`${styles.giantLine} ${styles.outline}`} delay={0.12} y={96}>IDEAS.</RiseLine>
+            <RiseLine as="span" className={styles.giantLine} delay={0.24} y={96}>FUTURES.</RiseLine>
+          </h2>
+        </ScrollVelocitySkew>
 
         <div className={styles.split} style={{ marginTop: "clamp(40px, 6vw, 80px)" }}>
           <ScrollRevealText
@@ -65,21 +71,27 @@ export function EventOverview() {
         </div>
 
         <div className={`${styles.mediaRow} ${styles.mediaRow3}`}>
-          <Wipe className={styles.mediaCard}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/flickr/hero-1.jpg" alt="The full valedictory hall seated at HR VISTA 2.0, November 2025" width={1600} height={900} loading="lazy" />
-            <span className={styles.mediaTag}>HR VISTA 2.0 · The room</span>
-          </Wipe>
-          <Wipe className={styles.mediaCard} delay={0.1}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/flickr/stats-1.jpg" alt="A delegate’s HR VISTA 2.0 badge and lanyard in close-up" width={1600} height={900} loading="lazy" />
-            <span className={styles.mediaTag}>The details</span>
-          </Wipe>
-          <Wipe className={styles.mediaCard} delay={0.2}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/flickr/room-2.jpg" alt="Young audience members listening to a session at HR VISTA 2.0" width={1600} height={901} loading="lazy" />
-            <span className={styles.mediaTag}>The people</span>
-          </Wipe>
+          <Tilt className={styles.tilt}>
+            <Wipe className={styles.mediaCard}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/media/flickr/hero-1.jpg" alt="The full valedictory hall seated at HR VISTA 2.0, November 2025" width={1600} height={900} loading="lazy" />
+              <span className={styles.mediaTag}>HR VISTA 2.0 · The room</span>
+            </Wipe>
+          </Tilt>
+          <Tilt className={styles.tilt}>
+            <Wipe className={styles.mediaCard} delay={0.1}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/media/flickr/stats-1.jpg" alt="A delegate’s HR VISTA 2.0 badge and lanyard in close-up" width={1600} height={900} loading="lazy" />
+              <span className={styles.mediaTag}>The details</span>
+            </Wipe>
+          </Tilt>
+          <Tilt className={styles.tilt}>
+            <Wipe className={styles.mediaCard} delay={0.2}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/media/flickr/room-2.jpg" alt="Young audience members listening to a session at HR VISTA 2.0" width={1600} height={901} loading="lazy" />
+              <span className={styles.mediaTag}>The people</span>
+            </Wipe>
+          </Tilt>
         </div>
 
         <ul className={styles.stats} style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -100,6 +112,7 @@ export function EventOverview() {
           </MagneticLink>
         </div>
       </div>
+      </SignalField>
     </section>
   );
 }

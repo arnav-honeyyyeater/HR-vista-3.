@@ -1027,6 +1027,110 @@
   color: var(--mist-400);
 }
 
+/* --- Pointer FX: tilt cards, drag strips, pointer glow --- */
+.tilt {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tiltShine {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Specular shine — vars inherit from the Tilt wrapper down to the card. */
+.mediaCard::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: var(--shine-on, 0);
+  transition: opacity 0.4s var(--ease-expo);
+  background: radial-gradient(
+    320px circle at var(--shine-x, 50%) var(--shine-y, 50%),
+    rgba(255, 255, 255, 0.2),
+    transparent 65%
+  );
+}
+
+.dragStrip {
+  overflow-x: auto;
+  overflow-y: hidden;
+  cursor: grab;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dragStrip::-webkit-scrollbar {
+  display: none;
+}
+
+.dragStrip:active {
+  cursor: grabbing;
+}
+
+.dragStrip > * {
+  scroll-snap-align: start;
+}
+
+/* Pointer-following glow on dark sections (SignalField vars). */
+.fieldWrap {
+  position: relative;
+}
+
+.pointerGlow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    560px circle at calc(50% + var(--signal-x, 0px)) calc(50% + var(--signal-y, 0px)),
+    rgba(46, 91, 255, 0.14),
+    transparent 70%
+  );
+}
+
+/* Giant headings nudge toward the cursor on hover. */
+.giantLine {
+  display: block;
+  transition:
+    transform 0.5s var(--ease-expo),
+    color 0.5s var(--ease-expo);
+}
+
+.giant:hover .giantLine {
+  transform: translateX(14px);
+}
+
+.giant:hover .giantLine + .giantLine {
+  transform: translateX(28px);
+}
+
+/* Stats pop on hover. */
+.statCell {
+  transition: transform 0.45s var(--ease-expo);
+}
+
+.statCell:hover {
+  transform: translateY(-6px);
+}
+
+/* Footer links slide right on hover. */
+.footerCol a {
+  display: inline-block;
+  transition:
+    color 0.3s,
+    transform 0.35s var(--ease-expo);
+}
+
+.footerCol a:hover,
+.footerCol a:focus-visible {
+  transform: translateX(8px);
+}
+
 /* --- Media walls — opraah is media-first; every section gets real photos --- */
 .mediaRow {
   display: grid;

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { content } from "@/lib/data/content";
 import { RiseLine, Wipe } from "@/components/site/Reveal";
 import { Marquee } from "@/components/ui/Marquee";
-import { DriftRow } from "@/components/ui/DriftRow";
+import { DragStrip } from "./PointerFX";
 import { ScrollVelocitySkew } from "@/components/ui/ScrollVelocity";
 import styles from "./Interior.module.css";
 
@@ -115,7 +115,7 @@ export function EventExperience() {
         </div>
 
         <div className={styles.mediaStrip}>
-          <DriftRow distance={120} index={0} skew>
+          <DragStrip className={styles.dragStrip}>
             <div className={styles.stripTrack}>
               {[
                 { src: "/media/flickr/story-1.jpg", alt: "Two speakers seated in conversation on the HR VISTA 2.0 stage" },
@@ -131,7 +131,7 @@ export function EventExperience() {
                 </Wipe>
               ))}
             </div>
-          </DriftRow>
+          </DragStrip>
         </div>
       </div>
     </section>

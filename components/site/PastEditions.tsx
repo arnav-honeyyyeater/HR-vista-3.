@@ -1,7 +1,10 @@
 import { content } from "@/lib/data/content";
 import { RiseLine, Wipe } from "@/components/site/Reveal";
 import { Marquee } from "@/components/ui/Marquee";
+import { StickyStack } from "@/components/ui/StickyStack";
+import { ScrollVelocitySkew } from "@/components/ui/ScrollVelocity";
 import { ScrollDrift, MagneticLink } from "./HomeMotion";
+import { Tilt } from "./PointerFX";
 import styles from "./Interior.module.css";
 
 const previews = [
@@ -58,13 +61,21 @@ export function PastEditions() {
           </MagneticLink>
         </div>
 
-        <h2 id="editions-title" className={styles.giant}>
-          <RiseLine as="span" className={styles.giantLine} y={88}>THE NEXT CHAPTER</RiseLine>
-          <RiseLine as="span" className={`${styles.giantLine} ${styles.ink}`} delay={0.12} y={88}>STARTED HERE.</RiseLine>
-        </h2>
+        <ScrollVelocitySkew max={4}>
+          <h2 id="editions-title" className={styles.giant}>
+            <RiseLine as="span" className={styles.giantLine} y={88}>THE NEXT CHAPTER</RiseLine>
+            <RiseLine as="span" className={`${styles.giantLine} ${styles.ink}`} delay={0.12} y={88}>STARTED HERE.</RiseLine>
+          </h2>
+        </ScrollVelocitySkew>
 
-        <div className={styles.stack} style={{ marginTop: "clamp(40px, 6vw, 80px)" }}>
-          {content.pastEditions.map((edition, index) => (
+        <div style={{ marginTop: "clamp(40px, 6vw, 80px)" }}>
+          <StickyStack
+            className={styles.stack}
+            stickyTop="10vh"
+            step={22}
+            shrink={0.96}
+            rotate={1.2}
+            cards={content.pastEditions.map((edition, index) => (
             <article
               key={edition.edition}
               className={styles.editionCard}
@@ -101,17 +112,22 @@ export function PastEditions() {
               </div>
 
               <div className={`${styles.mediaRow} ${styles.mediaRow2}`}>
-                <Wipe className={styles.mediaCard}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={previews[index].extra[0].src} alt={previews[index].extra[0].alt} width={1600} height={900} loading="lazy" />
-                </Wipe>
-                <Wipe className={styles.mediaCard} delay={0.1}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={previews[index].extra[1].src} alt={previews[index].extra[1].alt} width={1600} height={900} loading="lazy" />
-                </Wipe>
+                <Tilt className={styles.tilt}>
+                  <Wipe className={styles.mediaCard}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={previews[index].extra[0].src} alt={previews[index].extra[0].alt} width={1600} height={900} loading="lazy" />
+                  </Wipe>
+                </Tilt>
+                <Tilt className={styles.tilt}>
+                  <Wipe className={styles.mediaCard} delay={0.1}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={previews[index].extra[1].src} alt={previews[index].extra[1].alt} width={1600} height={900} loading="lazy" />
+                  </Wipe>
+                </Tilt>
               </div>
             </article>
           ))}
+          />
         </div>
       </div>
     </section>

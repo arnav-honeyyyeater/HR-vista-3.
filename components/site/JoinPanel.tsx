@@ -1,6 +1,8 @@
 import { RiseLine } from "@/components/site/Reveal";
 import { Marquee } from "@/components/ui/Marquee";
-import { MagneticLink } from "./HomeMotion";
+import { ScrollVelocitySkew } from "@/components/ui/ScrollVelocity";
+import { MagneticLink, SignalField } from "./HomeMotion";
+import { Tilt } from "./PointerFX";
 import styles from "./Interior.module.css";
 
 /**
@@ -12,6 +14,8 @@ export function JoinPanel() {
   return (
     <section id="join" aria-labelledby="join-title" className={`hv-section ${styles.section} ${styles.brand}`}>
       <span id="involved" className={styles.hashAlias} aria-hidden="true" />
+      <SignalField className={styles.fieldWrap} strength={80}>
+      <span className={styles.pointerGlow} aria-hidden="true" />
 
       <div className={styles.opener}>
         <Marquee
@@ -30,10 +34,12 @@ export function JoinPanel() {
           <p className={styles.chapterNote}>HR VISTA 3.0</p>
         </div>
 
-        <h2 id="join-title" className={styles.giant}>
-          <RiseLine as="span" className={styles.giantLine} y={88}>THE NEXT</RiseLine>
-          <RiseLine as="span" className={`${styles.giantLine} ${styles.outline}`} delay={0.12} y={88}>CHAPTER.</RiseLine>
-        </h2>
+        <ScrollVelocitySkew max={4}>
+          <h2 id="join-title" className={styles.giant}>
+            <RiseLine as="span" className={styles.giantLine} y={88}>THE NEXT</RiseLine>
+            <RiseLine as="span" className={`${styles.giantLine} ${styles.outline}`} delay={0.12} y={88}>CHAPTER.</RiseLine>
+          </h2>
+        </ScrollVelocitySkew>
 
         <div className={styles.joinGrid} style={{ marginTop: "clamp(40px, 6vw, 80px)" }}>
           <div>
@@ -57,22 +63,25 @@ export function JoinPanel() {
             </p>
           </div>
 
-          <MagneticLink
-            href="/brochure"
-            className={styles.brochureCard}
-            label="Preview the 12-page HR VISTA 3.0 brochure"
-          >
-            <span id="brochure" className={styles.hashAlias} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brochure/page-01.png" alt="Cover of the HR VISTA 3.0 brochure" width={834} height={1053} loading="lazy" />
-            <span className={styles.brochureCaption}>
-              <span>Keep exploring</span>
-              <strong>The HR VISTA 3.0 brochure</strong>
-              <span>12 pages · Read online</span>
-            </span>
-          </MagneticLink>
+          <Tilt className={styles.tilt} max={5}>
+            <MagneticLink
+              href="/brochure"
+              className={styles.brochureCard}
+              label="Preview the 12-page HR VISTA 3.0 brochure"
+            >
+              <span id="brochure" className={styles.hashAlias} />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brochure/page-01.png" alt="Cover of the HR VISTA 3.0 brochure" width={834} height={1053} loading="lazy" />
+              <span className={styles.brochureCaption}>
+                <span>Keep exploring</span>
+                <strong>The HR VISTA 3.0 brochure</strong>
+                <span>12 pages · Read online</span>
+              </span>
+            </MagneticLink>
+          </Tilt>
         </div>
       </div>
+      </SignalField>
     </section>
   );
 }
