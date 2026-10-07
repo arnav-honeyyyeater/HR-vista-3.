@@ -1,65 +1,61 @@
 # HR VISTA 3.0 — Active website map
 
-Updated: 7 October 2026 (Asia/Calcutta).
+Updated: 7 October 2026, third iteration (Asia/Calcutta).
 
 ## Current scope
 
-The user approved implementation, then requested a much more expressive Awwwards-inspired direction and clarified **design and browsing UX only, without registration**. The active design is **Human Signals**: ink/navy, cobalt, large typographic compositions, layered photographs, and meaningful pointer/scroll interactions.
+User-approved direction (final steer, 7 Oct 2026): **opraah.in's language** — modern, minimalistic, **animation-heavy, everything mouse-interactive**, media-dominant. Rejected earlier this day: the "Human Signals" interior (radar/orbit/stamps — too sharp) and a Frontier Dialogues editorial direction (Awwwards HM — too sharp; scraped reference kept at `C:/Users/honey/AppData/Local/hermes/cache/scratch/ref/`, NOT the design target). The design target is **opraah.in**: reference captures in `docs/REFERENCE-SHOTS/`, motion measurements in `docs/MOTION-OPRAAH-PASS.md`. Design and browsing UX only — no registration.
 
-The opening hero remains unchanged. No code is pushed to main. The working branch is `codex/hr-vista-interior-redesign`.
+The opening hero (`Hero.tsx`, `Hero.module.css`) remains unchanged — the user fixed/likes it. No code is pushed to `main`. Working branch: **`feature/opraah-motion-interior`** (branched from `codex/hr-vista-interior-redesign`).
 
 ## Actual project
 
 `C:/Users/honey/Downloads/Opaarh copy/hr-vista-3.0`
 
-Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, Framer Motion, existing Nohemi/Manrope fonts. Older docs may describe unrelated routes/components/styles; inspect the current source.
+Next.js 15 App Router, React 19, TypeScript, Tailwind CSS 4, Framer Motion, GSAP, Lenis. Fonts: self-hosted Nohemi (display) + Manrope (body), see `docs/TYPE-NOHEMI.md`. Older docs may describe unrelated routes/components/styles; inspect the current source.
 
 ## Routes and components
 
 | Route | Active content |
 | --- | --- |
-| `/` | `Hero`, `EventOverview`, `EventExperience`, `AudienceValue`, `PastEditions`, `CampusVenue`, `JoinPanel` |
-| `/work` | `EditionsArchive` with 2.0 then 1.0, photo galleries, `PhotoLightbox`, upcoming-edition panel |
-| `/brochure` | `BrochureReader`, all twelve pages, explicit navigation, thumbnails, larger reading mode and zoom |
+| `/` | `Hero` (untouched) + rebuilt `EventOverview`, `EventExperience`, `AudienceValue`, `PastEditions`, `CampusVenue`, `JoinPanel` + `SiteFooter` |
+| `/work` | `EditionsArchive` with 2.0 then 1.0, photo galleries, `PhotoLightbox`, upcoming-edition panel (unchanged this iteration) |
+| `/brochure` | `BrochureReader`, all twelve pages, navigation, thumbnails, reading mode and zoom (unchanged this iteration) |
 
-Header and footer are outside semantic main content. Each route uses `main#main-content` for skip navigation. Homepage chapters use `#overview`, `#experience`, `#audience`, `#work`, `#venue`, and `#join`. Archive anchors are `#hr-vista-2` and `#hr-vista-1`. `/brochure?page=1..12` supports document deep links.
+Header and footer are outside semantic main content. Each route uses `main#main-content` for skip navigation. Homepage chapters use `#overview`, `#experience`, `#audience`, `#work`, `#venue`, `#join`; aliases `#story`, `#room`, `#organisers`, `#involved`, `#brochure` preserved. Archive anchors `#hr-vista-2`, `#hr-vista-1`; `/brochure?page=1..12` deep links.
 
-There is **no active registration or enquiry form**. Existing `app/api/register`, `app/api/contact`, and `lib/data/store.ts` are inherited functionality, not part of this design iteration. Do not imply that the site sends mail, accepts bookings, or confirms attendance.
+There is **no active registration or enquiry form**. `app/api/register`, `app/api/contact`, `lib/data/store.ts` are inherited functionality, not part of this design iteration. Do not imply the site sends mail, accepts bookings, or confirms attendance.
 
-## Styling and motion
+## Design system (this iteration)
 
-- The original root palette and hero files are preserved.
-- `app/globals.css` adds scoped `.hv` containers, type, actions, and focus foundations.
-- `HomeInterior.module.css` gives the homepage its compositions.
-- `HomeMotion.tsx` provides bounded magnetic links, pointer fields, and scroll drift.
-- Archive, brochure, lightbox, header, and footer use their own modules.
-- Keep desktop effects bounded and support touch, keyboard, and reduced-motion alternatives.
-- Keep all core information readable without waiting for motion.
-- Native dialog viewers use focus containment, Escape, and focus restoration.
+- `components/site/Interior.module.css` — interior system (replaced deleted `HomeInterior.module.css`, `SiteFooter.module.css`).
+- `components/site/PointerFX.tsx` — `Tilt` (cursor-lean 3D cards + specular shine) and `DragStrip` (grab-and-throw gallery; wheel/touch native).
+- Surface rhythm: dark → light → dark → wash → dark → brand blue (Join) → ink-900 footer. One colour moment only.
+- Every section: velocity-skewed marquee opener → giant heading (spring rise lines) → one idea per block → real photography (rounded 20px cards, clip-wipe reveals, hover zoom, pill tags).
+- Motion + interactivity: `HeadingWords`/`RiseLine`, `ScrollRevealText` tint sweep, `Counter` stats, `Marquee` openers (7), `ScrollVelocitySkew` on all giant headings, `ScrollDrift` parallax, `MagneticLink` CTAs, `StickyStack` on the two edition cards (pin + accumulate), `Tilt` on media cards + brochure card, `DragStrip` photo gallery, `SignalField` cursor glow on overview/audience/join, hover choreography (heading lines stagger-slide, stats pop, rows glide, footer links slide).
+- Keep desktop effects bounded; support touch, keyboard, and reduced-motion alternatives. All pointer FX are mouse-only and vanish under `prefers-reduced-motion` (page renders static + full opacity).
+- Archive, brochure, lightbox, header use their own modules. Native dialog viewers keep focus containment, Escape, and focus restoration.
+
+## Verified (7 Oct 2026)
+
+- `npx tsc --noEmit` clean; `npm run build` passes (static routes generated).
+- Desktop + 390px mobile: no horizontal scroll (hero drum overflow is clipped by `body overflow-x:hidden`, pre-existing and intentional).
+- Interactions exercised with real synthetic input: Tilt (matrix3d + shine on), DragStrip (scrollLeft 0→360 after drag), SignalField glow (`--signal-x/y` track cursor), StickyStack (2 `position:sticky` cards); reduced-motion probe: `force-reveal`, 0 pending reveals, marquee animations stopped, 0 dimmed in-view elements. `Hero.tsx` / `Hero.module.css` unchanged.
 
 ## Content and assets
 
-The supplied source consists of twelve rendered brochure pages in `public/brochure/`. Shared metadata is `lib/data/brochure.ts`. No original PDF is present; do not advertise a PDF download.
+Twelve rendered brochure pages in `public/brochure/`; metadata `lib/data/brochure.ts`. No original PDF — never advertise a PDF download.
 
-Brochure facts:
-- HR VISTA 3.0: 21–22 November 2026.
-- Location: Mumbai, BKC, Jio Grounds.
-- Presenter: Centre for Placement and Career Guidance (CPCG).
-- Institution: CHRIST (Deemed to be University), Pune Lavasa Campus.
-- 500+ professionals and 50+ organisations are projections, not live registrations.
-- Speakers, sponsors, timed agenda, admissions, fees, and logistical arrangements must not be invented.
+Brochure facts: HR VISTA 3.0, 21–22 November 2026, Mumbai, BKC, Jio Grounds; presented by CPCG, CHRIST (Deemed to be University), Pune Lavasa Campus. 500+ professionals and 50+ organisations are projections, not live registrations. Speakers, sponsors, timed agenda, admissions, fees, and logistics must not be invented.
 
-Historical photographs are documented in `docs/FLICKR-MANIFEST.md`. The redesigned archive separates February 2025 (1.0) from November 2025 (2.0). Do not use other-institution photographs as HR VISTA documentation. Caption Lavasa landscape imagery as location context, not as the Mumbai venue. The preserved hero's media has not been replaced.
+Historical photographs: `docs/FLICKR-MANIFEST.md` — alts/captions must match it. Archive separates February 2025 (1.0) from November 2025 (2.0). Do not use other-institution photographs as HR VISTA documentation. Caption Lavasa landscape as location context, not the Mumbai venue. The preserved hero's media has not been replaced.
 
-## Verification
+## Git
 
-From the project:
+- `main` and `codex/hr-vista-interior-redesign` untouched by this iteration; user explicitly reserved `main`.
+- Windows push gotcha: plain `git push` fails (helper-selector supplies no creds) and can hang on flaky home DNS; use `GIT_TERMINAL_PROMPT=0 git -c credential.helper=manager push` and retry when DNS recovers.
 
-```powershell
-node node_modules/typescript/bin/tsc --noEmit --incremental false
-npm run build
-```
+## Pending
 
-Browser validation should cover desktop and mobile layouts, programme and audience exploration, archive anchors and lightboxes, brochure page boundaries/deep links/zoom, navigation, focus restoration, and reduced motion. Verify that `Hero.tsx` and `Hero.module.css` remain unchanged.
-
-No backend submission tests or data collection are needed for this design-only iteration. No deployment or Git push is authorised by this implementation request.
+- `/work` and `/brochure` styling not yet aligned to the new interior — user has not asked yet.
+- User visual review of the interactive interior.
