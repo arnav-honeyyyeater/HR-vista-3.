@@ -1,0 +1,31 @@
+NOHEMI — FREE TYPEFACE LICENCE
+=============================
+
+Typeface:  NOHEMI
+Designer:  Rajesh Rajput
+Contact:   rajputrajesh_448@yahoo.com
+Designer:  https://www.behance.net/rajputrajesh
+Version:   1.000 (2023)
+Files:     app/fonts/Nohemi-{Light,Regular,Medium,SemiBold,Bold}.woff2
+           (weights 300 / 400 / 500 / 600 / 700)
+
+Licence terms, reproduced verbatim from the font's own name table (nameID 13):
+
+    "By downloading/installing NOHEMI free typeface you agree to this license.
+     This typeface is freeware, you can use it freely for personal and
+     commercial projects. The typeface files may not be modified without
+     written permission from Rajesh Rajput (rajputrajesh_448@yahoo.com)."
+
+WHAT THIS MEANS FOR THIS PROJECT
+
+  Permitted   Use in this commercial project, on the web, unmodified.
+  Permitted   Redistribution as part of this site's build output.
+  NOT allowed Modifying, subsetting, renaming or re-issuing the font files.
+
+The files here are byte-identical to the originals as published. Do not run
+them through a subsetter or a converter as part of the build. `next/font/local`
+only copies and hashes them, so the current setup is compatible; a future change
+that adds font subsetting would not be.
+
+Retrieved from the reference site's own published assets for comparison during
+development; see docs/TYPE-NOHEMI.md.

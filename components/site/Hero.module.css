@@ -1,0 +1,350 @@
+/* ============================================================
+   HERO — opraah.in's drum, reproduced.
+   ------------------------------------------------------------
+   Everything here is a measured value from the live reference rather than a
+   guess. See Hero.tsx for what the numbers DO; this file is where they live.
+
+   The composition, as fractions of a 100svh hero (measured against the
+   reference at 1708×962):
+
+     · grid plate   top 33.0%, height 71.6%, bled 120px past each edge, 32% op
+     · drum centre  top 35.0% — the drum's axis, and the horizon of the grid
+     · copy block   top 67.3%
+     · drum window  300×420, perspective 500px, radius 570px, 12 panels
+
+   The window is deliberately TINY. All the scale in this hero comes from the
+   projection, not from the box: a 300px-wide window with its eye almost on the
+   drum's axis throws a wall across the whole viewport. Sizing the window up
+   instead would flatten the perspective and kill the effect.
+   ============================================================ */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  height: 100svh;
+  min-height: 600px;
+  overflow: hidden;
+  /* The reference sits on flat black, which is a large part of why its media
+     reads so bright. We keep the ink-navy but push it most of the way down for
+     the length of the hero, then fade back out over the last fifth so the plate
+     meets the section below without a seam. */
+  background-color: var(--ink-900);
+  background-image: linear-gradient(180deg, #03060c 0%, #05090f 80%, rgba(10, 18, 32, 0) 100%);
+}
+
+/* ---------- 1. The floor ---------- */
+/* The reference ships this as a 3016×1075 PNG of a cone-projected grid, bled
+   120px past each edge and dropped to 32%. Same plate, same treatment. */
+.floor {
+  position: absolute;
+  left: -120px;
+  top: 33%;
+  z-index: 0;
+  width: calc(100% + 240px);
+  height: 71.6%;
+  opacity: 0.32;
+  pointer-events: none;
+  user-select: none;
+}
+
+.floor img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ---------- 2. The drum ---------- */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: grab;
+  touch-action: pan-y; /* vertical scroll survives a touch drag */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stage.is-dragging {
+  cursor: grabbing;
+}
+
+.stage:focus-visible {
+  outline: 2px solid var(--royal-500);
+  outline-offset: -10px;
+}
+
+/* The window the drum is projected through. Defaults are the reference's
+   desktop numbers; the breakpoint blocks at the foot of this file retune them. */
+.viewport {
+  --win-w: 300px;
+  --win-h: 420px;
+  --radius: 570px;
+  position: absolute;
+  left: 50%;
+  top: 35%;
+  width: var(--win-w);
+  height: var(--win-h);
+  margin-left: calc(var(--win-w) / -2);
+  margin-top: calc(var(--win-h) / -2);
+  /* MUST stay below --radius or the near panels pass behind the eye and the
+     projection blows up. 500 against 570 leaves the far panel at
+     500 / (500 + 570) = 0.47× and the level panels at 1.0×. */
+  perspective: 500px;
+  perspective-origin: 50% 50%;
+}
+
+.drum {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* One face of the drum. `--ry` is set inline per panel (-30° · k).
+
+   Order matters and is not interchangeable:
+     translateZ(−R)  push the panel out to the drum's surface, then
+     rotateY(−θ)     turn it to face back across the axis
+   with transform-origin parked 570px BEHIND the panel — that origin is what
+   makes the translate-then-rotate pair trace a circle instead of a flat fan,
+   which is exactly the bug the previous build of this hero shipped with. */
+.panel {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50% var(--radius);
+  transform: translateZ(calc(var(--radius) * -1)) rotateY(var(--ry, 0deg));
+  /* The near half of the drum faces away from the eye. Without this, those
+     panels smear across the whole viewport. */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Per-panel breathing — `translateY 0 → −15px → 0` over 3s, staggered 0.2s per
+   panel, straight from the reference component. It lives on an inner element so
+   it never has to share the transform property with the drum maths. */
+.breathe {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  animation: hero-breathe 3s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+  will-change: transform;
+}
+
+@keyframes hero-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.breathe img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* The reference's panels are video, so its wall is alive on its own. Ours are
+     stills, and a still wall under a moving drum looks like a screenshot. A slow
+     push-in gives each frame the drift a locked-off shot has, which is the part
+     of "video" the eye actually reads. Deliberately tiny — the panel is clipped
+     hard, so this is a breath, not a zoom. */
+  animation: hero-push 30s ease-in-out infinite alternate;
+  animation-delay: calc(var(--d, 0s) - 15s);
+  will-change: transform;
+}
+
+@keyframes hero-push {
+  from {
+    transform: scale(1.02);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* ---------- 3. Copy ---------- */
+.copy {
+  position: absolute;
+  left: var(--section-padding-x);
+  right: var(--section-padding-x);
+  top: 67.3%;
+  z-index: 5;
+  text-align: center;
+  pointer-events: none; /* the wall stays grabbable through the type */
+}
+
+/* The reference's eyebrow: Manrope 400, centred, 24px on a 962px-tall viewport,
+   and set on a 3.7em line box — 88.8px. That is not a mistake to tidy up: the
+   half-leading is what floats the eyebrow clear of the headline, and it is the
+   reason the two read as separate statements rather than a stacked pair. At 962
+   it puts the eyebrow's glyphs at y≈680 and the headline's at y≈746.
+   `min(vw, vh)` keeps the 24px exact at the reference size while backing the
+   type off on short or narrow screens. */
+.caption {
+  font-family: var(--font-body, ui-sans-serif, system-ui, sans-serif);
+  font-size: clamp(0.75rem, min(1.4vw, 2.5vh), 1.5rem);
+  font-weight: 400;
+  line-height: 3.7;
+  letter-spacing: -0.01em;
+  color: var(--paper);
+  animation: hero-fade 0.5s var(--ease-spring) 0.08s both;
+}
+
+/* The reference's headline: 80px, weight 500, line-height 1, two lines, white,
+   centred. 4.7vw / 8.3vh both land on 80px at 1708×962. The 10px gap is what
+   remains between the eyebrow's line box and the headline in the reference. */
+.title {
+  margin-top: clamp(0.4rem, 1.05vh, 0.75rem);
+  font-family: var(--font-display, ui-sans-serif, system-ui, sans-serif);
+  font-size: clamp(1.9rem, min(4.7vw, 8.3vh), 5rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--paper);
+  /* The reference drops its headline in from 150px above on a bouncy spring. */
+  animation: hero-drop 0.85s var(--ease-spring) 0.2s both;
+}
+
+@keyframes hero-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-150px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 4. Drag cue ---------- */
+.cue {
+  position: absolute;
+  right: clamp(1rem, 3vw, 3rem);
+  bottom: clamp(0.75rem, 2.5svh, 1.75rem);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--mist-200);
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.cue-line {
+  width: 34px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--mist-400));
+  animation: cue-slide 2.1s var(--ease-expo) infinite;
+}
+
+@keyframes cue-slide {
+  0% {
+    transform: scaleX(0.2);
+    transform-origin: right;
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: right;
+    opacity: 0;
+  }
+}
+
+/* ---------- 5. Breakpoints ---------- */
+/* Same three geometries the reference uses, read from its own markup:
+   ≥1200 → 300×420 r570 · 810–1199 → 300×290 r420 · <810 → 140×230 r270.
+   The perspective is 500px at every size; only the window and the radius move. */
+@media (max-width: 1199px) {
+  .viewport {
+    --win-w: 300px;
+    --win-h: 290px;
+    --radius: 420px;
+  }
+}
+
+@media (max-width: 809px) {
+  .viewport {
+    --win-w: 140px;
+    --win-h: 230px;
+    --radius: 270px;
+    /* The phone window is small, so its wall is a shallower ribbon than the
+       desktop one and the copy has to come up to meet it — at the desktop's 35%
+       the wall ends around y 350 and the type does not start until 506, which
+       reads as two unrelated halves of a screen. */
+    top: 39%;
+  }
+
+  .floor {
+    top: 37%;
+    height: 62%;
+  }
+
+  .copy {
+    top: 58%;
+  }
+}
+
+/* Landscape phones have almost no height — pull the drum up and let the copy
+   sit closer to it rather than pushing it off the bottom. */
+@media (max-height: 620px) {
+  .viewport {
+    top: 30%;
+  }
+
+  .copy {
+    top: 58%;
+  }
+
+  .floor {
+    top: 28%;
+    height: 66%;
+  }
+}
+
+/* ---------- 6. Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .stage,
+  .stage.is-dragging {
+    cursor: default;
+  }
+
+  .breathe,
+  .breathe img {
+    animation: none;
+  }
+
+  .caption,
+  .title {
+    animation: none;
+  }
+
+  .cue-line {
+    animation: none;
+    opacity: 0.7;
+  }
+}
