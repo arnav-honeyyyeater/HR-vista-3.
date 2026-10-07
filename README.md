@@ -17,7 +17,7 @@ hr-vista-3.0/
 └── lib/data/content.ts       the single source of all copy
 ```
 
-## Run it
+## Run it manually or click the Start bat file!
 
 ```bash
 npm install
