@@ -19,11 +19,11 @@ import { usePathname } from "next/navigation";
  */
 
 const NAV_LINKS = [
-  { label: "Editions", href: "#work" },
-  { label: "Moments", href: "#moments" },
+  { label: "Experience", href: "#experience" },
+  { label: "People", href: "#room" },
+  { label: "Mumbai", href: "#mumbai" },
   { label: "Brochure", href: "#brochure" },
-  { label: "Who Comes", href: "#room" },
-  { label: "Gallery", href: "#gallery" },
+  { label: "Why HR VISTA", href: "#why" },
 ] as const;
 
 export function SiteHeader() {
