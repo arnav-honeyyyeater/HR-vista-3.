@@ -1,0 +1,12 @@
+.dialog { position: fixed; inset: 0; width: min(1120px, calc(100vw - 48px)); max-height: calc(100dvh - 48px); margin: auto; padding: 24px; border: 0; border-radius: 10px; background: #0a1220; color: white; overflow: auto; overscroll-behavior: contain; }
+.dialog::backdrop { background: rgb(4 10 20 / 82%); }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-bottom: 18px; font-size: 14px; }
+.toolbar p { color: #c8d1e0; }
+.dialog button { display: inline-flex; align-items: center; gap: 12px; padding: 10px 14px; min-height: 44px; background: #202d41; color: white; border-radius: 5px; cursor: pointer; font-size: 14px; }
+.dialog button:hover { background: #33435c; }
+.dialog button:focus-visible, .dialog a:focus-visible { outline: 3px solid #8ea9ff; outline-offset: 4px; }
+.photo { display: block; width: 100%; height: auto; max-height: 64dvh; object-fit: contain; }
+.caption { display: grid; gap: 5px; font-size: 14px; line-height: 1.65; color: #e1e8f2; margin-top: 16px; }
+.caption a { font-size: 12px; color: #afc0df; text-decoration: underline; text-underline-offset: 3px; width: fit-content; }
+.controls { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 13px; }
+@media (max-width: 560px) { .dialog { width: calc(100vw - 20px); max-height: calc(100dvh - 20px); padding: 16px; } .toolbar { font-size: 12px; } .toolbar button { padding: 9px 12px; } .photo { max-height: 58dvh; } .caption { font-size: 13px; } }

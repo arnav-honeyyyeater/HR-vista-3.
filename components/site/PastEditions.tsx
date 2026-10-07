@@ -1,144 +1,27 @@
-"use client";
-
-import { Marquee } from "@/components/ui/Marquee";
 import { content } from "@/lib/data/content";
-import { HeadingWords } from "@/components/ui/HeadingWords";
-import { Reveal } from "./Reveal";
+import { MagneticLink, ScrollDrift, SignalField } from "./HomeMotion";
+import styles from "./HomeInterior.module.css";
 
-/**
- * S8 — "OUR WORK" (DESIGN BRIEF V4 §2: "Past Editions = big media tiles with
- * marquee titles").
- *
- * Two editions → two oversized media tiles. The photograph is the card; the
- * copy is a label stack (theme eyebrow + dates/venue caption + a short note).
- * Body copy cut hard to satisfy the 40-word declutter rule.
- *
- * Motion: doubled marquee title with velocity skew (marquee system #2 of 3),
- * masked wipe-in on the media, 1.05/0.35s hover zoom + frame cross-fade,
- * 8px hover lift.
- */
-
-interface Card {
-  title: string;
-  caption: string;
-  theme: string;
-  notes: string;
-  primary: string;
-  secondary: string;
-  alt: string;
-}
-
-const CARDS: Card[] = [
-  {
-    title: content.pastEditions[0].edition,
-    caption: `${content.pastEditions[0].dates} · ${content.pastEditions[0].venue}`,
-    theme: content.pastEditions[0].theme,
-    notes: content.pastEditions[0].notes,
-    primary: "/media/flickr/editions-1.jpg",
-    secondary: "/media/flickr/editions-2.jpg",
-    alt: "HR VISTA 1.0",
-  },
-  {
-    title: content.pastEditions[1].edition,
-    caption: `${content.pastEditions[1].dates} · ${content.pastEditions[1].venue}`,
-    theme: content.pastEditions[1].theme,
-    notes: content.pastEditions[1].notes,
-    primary: "/media/flickr/editions-3.jpg",
-    secondary: "/media/flickr/editions-4.jpg",
-    alt: "HR VISTA 2.0",
-  },
+const previews = [
+  { photo: "/media/raw/hrvista1_feb03.jpg", alt: "An HR VISTA 1.0 delegate taking part in a conversation in February 2025", caption: "A delegate conversation · February 2025", recap: "The first edition brought around 50 HR delegates to Lavasa for keynotes, mentorship and conversations about the changing world of work.", anchor: "hr-vista-1", number: "01", month: "FEBRUARY" },
+  { photo: "/media/flickr/editions-1.jpg", alt: "A speaker at the podium during HR VISTA 2.0 in November 2025", caption: "Perspectives from the stage · November 2025", recap: "The second edition explored leadership in a post-AI world through four panels, two round tables and connections across the HR community.", anchor: "hr-vista-2", number: "02", month: "NOVEMBER" },
 ];
-
-function WorkCard({ card, delay }: { card: Card; delay: number }) {
-  return (
-    <article className="group lift h-full overflow-hidden rounded-[var(--radius-panel)] border border-[var(--mist-200)] bg-[var(--paper)] hover:border-[var(--royal-500)]">
-      {/* Marquee title strip (marquee system 2 of 3) */}
-      <div className="bleed border-b border-[var(--mist-200)] py-4">
-        <Marquee
-          speed={26}
-          velocitySkew
-          items={[0, 1, 2, 3].map((i) => (
-            <span
-              key={i}
-              className="display-2 px-3 text-[clamp(1.6rem,3.4vw,3rem)] whitespace-nowrap text-[var(--ink-900)]"
-            >
-              {card.title}
-              <span className="px-3 text-[var(--royal-500)]">×</span>
-            </span>
-          ))}
-        />
-      </div>
-
-      {/* Media with hover cross-fade — the card's whole point */}
-      <div
-        data-reveal="wipe"
-        style={{ ["--rd" as string]: `${delay}s` }}
-        className="zoom-frame relative aspect-[16/10] w-full overflow-hidden bg-[var(--sky-100)]"
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={card.primary}
-          alt={card.alt}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition-all duration-[0.45s] ease-[var(--ease-expo)] group-hover:scale-105 group-hover:opacity-0"
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={card.secondary}
-          alt=""
-          aria-hidden
-          loading="lazy"
-          className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 transition-all duration-[0.45s] ease-[var(--ease-expo)] group-hover:scale-100 group-hover:opacity-100"
-        />
-      </div>
-
-      {/* Caption — labels, not prose */}
-      <div className="flex flex-wrap items-start justify-between gap-4 p-5 md:p-7">
-        <div className="min-w-0 flex-1">
-          <p className="eyebrow text-[var(--royal-500)]">{card.theme}</p>
-          <p className="mt-2 text-sm text-[var(--mist-400)]">{card.caption}</p>
-          <p className="mt-3 text-sm leading-relaxed text-[var(--ink-900)]">
-            {card.notes}
-          </p>
-        </div>
-        <a
-          href="#brochure"
-          className="pill pill-ghost shrink-0 text-sm text-[var(--ink-900)]"
-        >
-          More <span aria-hidden>↗</span>
-        </a>
-      </div>
-    </article>
-  );
-}
 
 export function PastEditions() {
   return (
-    <section id="work" className="sec sec-light overflow-hidden">
-      <div className="sec-layer content-max">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p className="eyebrow text-[var(--signal)]">Past editions</p>
-            <div className="display-2 mt-4 max-w-4xl text-[length:var(--text-section)]">
-              <HeadingWords as="div" text="Two editions already." />
-              <HeadingWords
-                as="div"
-                delay={0.07}
-                className="text-[var(--mist-400)]"
-                text="Each one raised the bar."
-              />
-            </div>
-          </div>
-          <p className="eyebrow text-[var(--mist-400)]">1.0 / 2.0</p>
-        </div>
-
-        <div className="mt-10 grid gap-6 md:grid-cols-2 md:gap-7">
-          {CARDS.map((card, i) => (
-            <Reveal key={card.title} delay={i * 0.08} className="h-full">
-              <WorkCard card={card} delay={i * 0.08} />
-            </Reveal>
-          ))}
-        </div>
+    <section id="work" aria-labelledby="editions-title" className={`hv-section ${styles.editions}`}>
+      <div className="hv-container">
+        <div className={styles.sectionHeading}><p className="hv-eyebrow">04 / The journey so far</p><MagneticLink href="/work" className={styles.archiveLink}>Explore the archive <span aria-hidden="true">↗</span></MagneticLink></div>
+        <h2 id="editions-title" className={styles.editionsTitle}>THE NEXT CHAPTER<br /><span>STARTED HERE.</span></h2>
+        <div className={styles.editionGrid}>{content.pastEditions.map((edition, index) => <SignalField key={edition.edition} className={`${styles.editionCard} ${index === 1 ? styles.editionCardSecond : ""}`} strength={18}>
+          <article>
+            <div className={styles.editionTopline}><span>{edition.edition}</span><span>CHRIST · LAVASA</span></div>
+            <ScrollDrift className={styles.editionPoster} distance={index === 0 ? 18 : -18}>
+              <figure><div className={styles.editionImage}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={previews[index].photo} alt={previews[index].alt} width={1600} height={900} loading="lazy" /><div className={styles.editionYear} aria-hidden="true"><span>20</span><span>25</span></div><span className={styles.editionMonth} aria-hidden="true">{previews[index].month}</span></div><figcaption>{previews[index].caption}</figcaption></figure>
+            </ScrollDrift>
+            <div className={styles.editionCopy}><p className={styles.editionDate}>{edition.dates}</p><h3>{edition.theme}</h3><p className="hv-copy">{previews[index].recap}</p><MagneticLink href={`/work#${previews[index].anchor}`} className={styles.editionAction}>Revisit {edition.edition} <span aria-hidden="true">↗</span></MagneticLink></div>
+          </article>
+        </SignalField>)}</div>
       </div>
     </section>
   );

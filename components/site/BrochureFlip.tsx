@@ -3,23 +3,21 @@
 import { FlipBook } from "@/components/ui/FlipBook";
 import { HeadingWords } from "@/components/ui/HeadingWords";
 import { Reveal } from "./Reveal";
+import { brochurePages } from "@/lib/data/brochure";
 
 /**
  * S10 — MAGAZINE FLIP (opraah: "Flip through it. Trust us. /
  * Tap on the magazine").
  *
- * Uses the existing FlipBook primitive over the 10 rendered pages of
+ * Uses the existing FlipBook primitive over the 12 rendered pages of
  * HR 3.0.pdf in /brochure/.
  */
 
-const PAGES = Array.from({ length: 10 }, (_, i) => {
-  const n = String(i + 1).padStart(2, "0");
-  return {
-    src: `/brochure/page-${n}.png`,
-    alt: `HR VISTA 3.0 brochure — page ${n}`,
-    caption: `Page ${n}`,
-  };
-});
+const PAGES = brochurePages.map((page, index) => ({
+  src: page.src,
+  alt: `HR VISTA 3.0 brochure — page ${index + 1}: ${page.title}`,
+  caption: `Page ${index + 1}`,
+}));
 
 export function BrochureFlip() {
   return (
@@ -40,7 +38,7 @@ export function BrochureFlip() {
         </Reveal>
 
         <p className="mt-6 text-center text-sm text-[var(--mist-400)]">
-          HR VISTA 3.0 official brochure · 10 pages · use ← / → to turn
+          HR VISTA 3.0 official brochure · {brochurePages.length} pages · use ← / → to turn
         </p>
       </div>
     </section>

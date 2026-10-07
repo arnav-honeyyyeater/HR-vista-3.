@@ -9,19 +9,13 @@ export const metadata: Metadata = {
     "Every HR VISTA edition, its theme and its formats: HR VISTA 1.0 (Feb 2025), HR VISTA 2.0 (Nov 2025) and HR VISTA 3.0 (21–22 November 2026, BKC, Mumbai).",
 };
 
-/**
- * /work — the editions archive.
- *
- * Built 1:1 to the reference's /work page: a white ground, an oversized page
- * heading, and a grid of media cards each carrying a doubled, scrolling title
- * and a "More" pill. See components/site/EditionsArchive.tsx for the mapping.
- */
+/** Edition recaps with photographs from each historical event. */
 export default function WorkPage() {
   return (
-    <>
+    <div className="hv">
       <SiteHeader />
       <EditionsArchive />
       <SiteFooter />
-    </>
+    </div>
   );
 }

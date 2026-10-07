@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { countBrochurePages } from "@/lib/data/store";
+import { brochurePages } from "@/lib/data/brochure";
 
 export const runtime = "nodejs";
 
-/** Brochure metadata — page count from the rendered public/brochure/*.png set. */
+/** JSON metadata for the rendered brochure pages, not a PDF download. */
 export async function GET() {
-  const pages = await countBrochurePages();
   return NextResponse.json({
     title: "HR VISTA 3.0",
-    pages,
+    pages: brochurePages.length,
+    contents: brochurePages,
     updatedAt: new Date().toISOString(),
   });
 }
