@@ -12,6 +12,10 @@ const previews = [
     recap: "The first edition brought around 50 HR delegates to Lavasa for keynotes, mentorship and conversations about the changing world of work.",
     anchor: "hr-vista-1",
     month: "FEBRUARY",
+    extra: [
+      { src: "/media/flickr/story-2.jpg", alt: "A cultural dance performance on the HR VISTA stage in February 2025" },
+      { src: "/media/flickr/room-3.jpg", alt: "HR VISTA 1.0 delegates seated on tiered amphitheatre seating" },
+    ],
   },
   {
     photo: "/media/flickr/editions-1.jpg",
@@ -20,6 +24,10 @@ const previews = [
     recap: "The second edition explored leadership in a post-AI world through four panels, two round tables and connections across the HR community.",
     anchor: "hr-vista-2",
     month: "NOVEMBER",
+    extra: [
+      { src: "/media/flickr/editions-3.jpg", alt: "The lamp-lighting ceremony opening HR VISTA 2.0 in November 2025" },
+      { src: "/media/flickr/editions-2.jpg", alt: "A cultural night dance performance with stage lighting at HR VISTA 2.0" },
+    ],
   },
 ];
 
@@ -90,6 +98,17 @@ export function PastEditions() {
                     </MagneticLink>
                   </p>
                 </div>
+              </div>
+
+              <div className={`${styles.mediaRow} ${styles.mediaRow2}`}>
+                <Wipe className={styles.mediaCard}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={previews[index].extra[0].src} alt={previews[index].extra[0].alt} width={1600} height={900} loading="lazy" />
+                </Wipe>
+                <Wipe className={styles.mediaCard} delay={0.1}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={previews[index].extra[1].src} alt={previews[index].extra[1].alt} width={1600} height={900} loading="lazy" />
+                </Wipe>
               </div>
             </article>
           ))}

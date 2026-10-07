@@ -46,6 +46,19 @@ export function CampusVenue() {
       <div className="hv-container">
         <p className={styles.photoCaption}>Lavasa landscape · the campus’s surrounding setting</p>
 
+        <div className={`${styles.mediaRow} ${styles.mediaRow2}`}>
+          <Wipe className={styles.mediaCard}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/editions-4.jpg" alt="Delegates and volunteers in a group photograph at HR VISTA 2.0" width={1600} height={900} loading="lazy" />
+            <span className={styles.mediaTag}>The community</span>
+          </Wipe>
+          <Wipe className={styles.mediaCard} delay={0.12}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/story-5.jpg" alt="The traditional lamp-lighting inauguration at HR VISTA 2.0" width={1600} height={901} loading="lazy" />
+            <span className={styles.mediaTag}>The tradition</span>
+          </Wipe>
+        </div>
+
         <div className={styles.split} style={{ marginTop: "clamp(40px, 6vw, 80px)" }}>
           <article>
             {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -1,4 +1,4 @@
-import { RiseLine } from "@/components/site/Reveal";
+import { RiseLine, Wipe } from "@/components/site/Reveal";
 import { ScrollRevealText } from "@/components/ui/ScrollRevealText";
 import { Marquee } from "@/components/ui/Marquee";
 import { Counter } from "@/components/ui/Counter";
@@ -62,6 +62,24 @@ export function EventOverview() {
             for industry experience and academic perspectives to meet—and for ideas to travel
             beyond the room.
           </p>
+        </div>
+
+        <div className={`${styles.mediaRow} ${styles.mediaRow3}`}>
+          <Wipe className={styles.mediaCard}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/hero-1.jpg" alt="The full valedictory hall seated at HR VISTA 2.0, November 2025" width={1600} height={900} loading="lazy" />
+            <span className={styles.mediaTag}>HR VISTA 2.0 · The room</span>
+          </Wipe>
+          <Wipe className={styles.mediaCard} delay={0.1}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/stats-1.jpg" alt="A delegate’s HR VISTA 2.0 badge and lanyard in close-up" width={1600} height={900} loading="lazy" />
+            <span className={styles.mediaTag}>The details</span>
+          </Wipe>
+          <Wipe className={styles.mediaCard} delay={0.2}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/room-2.jpg" alt="Young audience members listening to a session at HR VISTA 2.0" width={1600} height={901} loading="lazy" />
+            <span className={styles.mediaTag}>The people</span>
+          </Wipe>
         </div>
 
         <ul className={styles.stats} style={{ listStyle: "none", margin: 0, padding: 0 }}>

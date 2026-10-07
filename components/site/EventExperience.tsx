@@ -4,6 +4,7 @@ import { useState } from "react";
 import { content } from "@/lib/data/content";
 import { RiseLine, Wipe } from "@/components/site/Reveal";
 import { Marquee } from "@/components/ui/Marquee";
+import { DriftRow } from "@/components/ui/DriftRow";
 import { ScrollVelocitySkew } from "@/components/ui/ScrollVelocity";
 import styles from "./Interior.module.css";
 
@@ -111,6 +112,26 @@ export function EventExperience() {
               <span>{photographs[active].edition} · Lavasa</span>
             </p>
           </div>
+        </div>
+
+        <div className={styles.mediaStrip}>
+          <DriftRow distance={120} index={0} skew>
+            <div className={styles.stripTrack}>
+              {[
+                { src: "/media/flickr/story-1.jpg", alt: "Two speakers seated in conversation on the HR VISTA 2.0 stage" },
+                { src: "/media/flickr/editions-3.jpg", alt: "The lamp-lighting ceremony opening HR VISTA 2.0" },
+                { src: "/media/flickr/room-1.jpg", alt: "Front-row delegates listening during a session" },
+                { src: "/media/flickr/story-2.jpg", alt: "A cultural dance performance on the HR VISTA stage" },
+                { src: "/media/flickr/editions-4.jpg", alt: "Delegates and volunteers in a group photograph" },
+                { src: "/media/flickr/room-3.jpg", alt: "Delegates seated on tiered amphitheatre seating" },
+              ].map((photo) => (
+                <Wipe key={photo.src} className={styles.stripCard}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo.src} alt={photo.alt} width={1600} height={900} loading="lazy" />
+                </Wipe>
+              ))}
+            </div>
+          </DriftRow>
         </div>
       </div>
     </section>

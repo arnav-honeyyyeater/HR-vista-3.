@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { content } from "@/lib/data/content";
-import { RiseLine } from "@/components/site/Reveal";
+import { RiseLine, Wipe } from "@/components/site/Reveal";
 import { Marquee } from "@/components/ui/Marquee";
 import { MagneticLink } from "./HomeMotion";
 import styles from "./Interior.module.css";
@@ -86,6 +86,19 @@ export function AudienceValue() {
               </div>
             </div>
           ))}
+        </div>
+
+        <div className={`${styles.mediaRow} ${styles.mediaRow2}`}>
+          <Wipe className={styles.mediaCard}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/room-4.jpg" alt="Senior front-row attendees during a session at HR VISTA 2.0" width={1600} height={901} loading="lazy" />
+            <span className={styles.mediaTag}>Leaders in the room</span>
+          </Wipe>
+          <Wipe className={styles.mediaCard} delay={0.12}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/flickr/stats-2.jpg" alt="An attendee at the CHRIST (Deemed to be University) venue signage wall" width={1600} height={900} loading="lazy" />
+            <span className={styles.mediaTag}>Students & academia</span>
+          </Wipe>
         </div>
       </div>
     </section>
