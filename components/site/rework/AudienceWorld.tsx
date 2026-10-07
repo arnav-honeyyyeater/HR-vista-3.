@@ -74,7 +74,7 @@ export function AudienceWorld() {
         ))}
       </div>
 
-      <div className="relative overflow-hidden bg-[var(--royal-500)] text-white">
+      <div id="mumbai" className="relative overflow-hidden bg-[var(--royal-500)] text-white">
         <div className="pointer-events-none absolute -right-[12vw] top-1/2 h-[52vw] w-[52vw] -translate-y-1/2 rounded-full border border-white/15" />
         <div className="pointer-events-none absolute -right-[2vw] top-1/2 h-[28vw] w-[28vw] -translate-y-1/2 rounded-full border border-white/20" />
         <div className="content-max relative z-10 px-[var(--section-padding-x)] py-[clamp(6rem,10vw,10rem)]">
