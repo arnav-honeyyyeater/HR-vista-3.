@@ -4,7 +4,6 @@ import dynamic from "next/dynamic";
 import { useEffect, useId, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion } from "framer-motion";
 import type { JourneyMotion } from "./JourneyGlobe";
 import { content } from "@/lib/data/content";
 import { useReducedMotionPreference } from "@/lib/useReducedMotionPreference";
@@ -164,9 +163,9 @@ function RegionalMap({ completed = false }: { completed?: boolean }) {
   );
 }
 
-function MumbaiSetting({ staticView = false }: { staticView?: boolean }) {
+function MumbaiSetting() {
   return (
-    <figure className={styles.cityScene} data-city={staticView ? undefined : ""} aria-hidden={staticView ? undefined : true}>
+    <figure className={styles.cityScene} data-city>
       <img
         className={styles.cityPhoto}
         src="/media/mumbai/marine-drive-blue-hour.webp"
@@ -190,7 +189,7 @@ function MumbaiSetting({ staticView = false }: { staticView?: boolean }) {
 
 export function Journey() {
   const root = useRef<HTMLDivElement>(null);
-  const motionState = useRef<JourneyMotion>({ progress: 0, x: 0, y: 0 });
+  const motionState = useRef<JourneyMotion>({ progress: 0, x: 0, y: 0, visible: true });
   const reduced = useReducedMotionPreference();
   const [near, setNear] = useState(false);
   useEffect(() => {
@@ -210,6 +209,7 @@ export function Journey() {
   }, []);
   useEffect(() => {
     motionState.current.progress = 0;
+    motionState.current.visible = true;
     const element = root.current;
     if (!element) return;
     const earth = element.querySelector<HTMLElement>("[data-earth]");
@@ -226,31 +226,25 @@ export function Journey() {
       const clamp = (value: number) => Math.max(0, Math.min(1, value));
       const blend = (value: number) => { const p = clamp(value); return p * p * (3 - 2 * p); };
       const renderScene = () => {
-        const departure = blend((scene.origin - .5) / .2);
-        const mapReveal = blend((scene.origin - .71) / .27);
+        const focus = blend((scene.origin - .24) / .6);
+        const handoff = blend((scene.origin - .68) / .3);
         const arrival = scene.arrival;
-        const earthOpacity = 1 - departure;
-        const mapOpacity = mapReveal * (1 - blend(arrival / .7));
-        const cityOpacity = blend((arrival - .12) / .88);
-        motionState.current.progress = scene.origin * .55;
+        const earthOpacity = 1 - handoff;
+        const mapOpacity = handoff * (1 - blend(arrival / .8));
+        motionState.current.progress = focus;
+        motionState.current.visible = earthOpacity > .001;
         if (earth) {
           earth.style.opacity = String(earthOpacity);
           earth.style.visibility = earthOpacity < .001 ? "hidden" : "visible";
-          earth.style.transform = `scale(${1 + departure * .12})`;
-          earth.inert = scene.origin > .5;
-          earth.setAttribute("aria-hidden", String(scene.origin > .5));
+          earth.style.setProperty("--globe-controls", String(1 - blend(scene.origin / .36)));
+          earth.style.setProperty("--earth-zoom", String(1 + focus * 4));
+          earth.inert = scene.origin > .24;
+          earth.setAttribute("aria-hidden", String(scene.origin > .24));
         }
         if (map) {
           map.style.opacity = String(mapOpacity);
           map.style.visibility = mapOpacity < .001 ? "hidden" : "visible";
-          map.style.transform = `scale(${.92 + mapReveal * .08 + arrival * .16})`;
-        }
-        if (city) {
-          city.style.opacity = String(cityOpacity);
-          city.style.visibility = cityOpacity < .001 ? "hidden" : "visible";
-          city.style.transform = `translateY(${36 * (1 - arrival)}px) scale(${.97 + arrival * .03})`;
-          city.inert = cityOpacity < .5;
-          city.setAttribute("aria-hidden", String(cityOpacity < .5));
+          map.style.transform = `scale(${.72 + handoff * .28 + arrival * .12})`;
         }
       };
       renderScene();
@@ -266,6 +260,19 @@ export function Journey() {
           onRefresh: self => { scene.arrival = self.progress; renderScene(); },
         },
       });
+      // Mumbai belongs to its own chapter, so its whole frame rises with the
+      // document. A smaller inner drift adds depth without pinning the image.
+      if (city) {
+        gsap.fromTo(city, { y: 64 }, {
+          y: -48, ease: "none",
+          scrollTrigger: { trigger: "#mumbai", start: "top bottom", end: "bottom top", scrub: .65 },
+        });
+        const photo = city.querySelector("img");
+        if (photo) gsap.fromTo(photo, { yPercent: 5, scale: 1.16 }, {
+          yPercent: -5, scale: 1.08, ease: "none",
+          scrollTrigger: { trigger: "#mumbai", start: "top bottom", end: "bottom top", scrub: .65 },
+        });
+      }
 
       const route = element.querySelector<SVGPathElement>("[data-map] [data-route]");
       const airplane = element.querySelector<SVGGElement>("[data-map] [data-airplane]");
@@ -344,7 +351,11 @@ export function Journey() {
         layer.inert = false;
       }
       earth?.removeAttribute("aria-hidden");
-      city?.removeAttribute("aria-hidden");
+      earth?.style.removeProperty("--globe-controls");
+      earth?.style.removeProperty("--earth-zoom");
+      if (city) gsap.set(city.querySelector("img"), { clearProps: "transform" });
+      motionState.current.progress = 0;
+      motionState.current.visible = true;
       // Staggered fromTo tweens can restore their initial pose on revert.
       // Clear those local reveal styles so a live preference change leaves
       // every paragraph and action fully visible.
@@ -401,7 +412,6 @@ export function Journey() {
             A SYMBOLIC JOURNEY · NOT A NAVIGATION MAP
           </span>
         </div>
-        <MumbaiSetting />
         <div className={styles.sceneShade} />
       </div>
       <section
@@ -483,7 +493,7 @@ export function Journey() {
         className={`${styles.travelChapter} ${styles.arrival}`}
         aria-labelledby="mumbai-title"
       >
-        <div className={styles.staticCity}><MumbaiSetting staticView /></div>
+        <div className={styles.arrivalVisual}><MumbaiSetting /></div>
         <div className={styles.chapterCopy}>
           <p className={styles.eyebrow}>03 / THE NEXT DESTINATION</p>
           <h2 id="mumbai-title">
@@ -522,137 +532,6 @@ export function Journey() {
         </div>
       </section>
     </div>
-  );
-}
-
-const editions = [
-  {
-    number: "1.0",
-    kicker: "FEBRUARY 2025 · LAVASA",
-    title: "The first spark.",
-    copy: "A meeting of minds in the hills. Around 50 HR delegates came together for conversations, mentorship and a shared vision of work reimagined.",
-    image: "/media/flickr/raw/hrvista1_feb21.jpg",
-    alt: "HR VISTA 1.0 delegates gathered in the Lavasa amphitheatre",
-    caption: "The community takes shape · HR VISTA 1.0",
-    href: "/work#hr-vista-1",
-    label: "Explore the first edition",
-  },
-  {
-    number: "2.0",
-    kicker: "NOVEMBER 2025 · LAVASA",
-    title: "The conversation grows.",
-    copy: "Leadership in a post-AI world. Four panels, two round tables, and a community finding new connections—on the stage and beyond it.",
-    image: "/media/flickr/story-1.jpg",
-    alt: "Two speakers in conversation on stage at HR VISTA 2.0",
-    caption: "Perspectives in conversation · HR VISTA 2.0",
-    href: "/work#hr-vista-2",
-    label: "Revisit the second edition",
-  },
-  {
-    number: "3.0",
-    kicker: "NOVEMBER 2026 · MUMBAI",
-    title: "A wider horizon.",
-    copy: "Our most ambitious chapter yet. Two days in Mumbai, with 500+ professionals and representation from 50+ organisations expected. The same purpose, imagined at a new scale.",
-    image: "/media/flickr/editions-4.jpg",
-    alt: "The HR VISTA 2.0 community whose story continues into the planned third edition",
-    caption: "Our community, looking ahead · Photograph from HR VISTA 2.0",
-    href: "/brochure",
-    label: "Discover the vision for 3.0",
-  },
-];
-
-export function EditionJourney() {
-  const root = useRef<HTMLElement>(null);
-  const [active, setActive] = useState(0);
-  const reduced = useReducedMotionPreference();
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting)
-            setActive(Number((entry.target as HTMLElement).dataset.edition));
-        });
-      },
-      { rootMargin: "-25% 0px -45% 0px", threshold: 0 },
-    );
-    root.current
-      ?.querySelectorAll("[data-edition]")
-      .forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
-  return (
-    <section
-      id="editions"
-      className={styles.editions}
-      ref={root}
-      aria-labelledby="editions-heading"
-    >
-      <div className={styles.editionsHeader}>
-        <p className={styles.eyebrow}>04 / THE EVOLUTION</p>
-        <h2 id="editions-heading">
-          Every chapter.
-          <br />
-          <em>More possibility.</em>
-        </h2>
-        <p>Built on conversations. Grown through connection.</p>
-      </div>
-      <nav className={styles.editionNav} aria-label="Edition timeline">
-        {editions.map((edition, i) => (
-          <a
-            key={edition.number}
-            href={`#edition-${i + 1}`}
-            aria-current={active === i ? "step" : undefined}
-          >
-            <span>HR VISTA</span>
-            <strong>{edition.number}</strong>
-            <span>{i === 2 ? "THE NEXT CHAPTER" : "THE STORY SO FAR"}</span>
-          </a>
-        ))}
-      </nav>
-      {editions.map((edition, i) => (
-        <article
-          className={styles.edition}
-          id={`edition-${i + 1}`}
-          data-edition={i}
-          key={edition.number}
-        >
-          <div className={styles.editionInfo}>
-            <p className={styles.eyebrow}>{edition.kicker}</p>
-            <span className={styles.editionNumber} aria-hidden="true">
-              {edition.number}
-            </span>
-            <h3>{edition.title}</h3>
-            <p className={styles.body}>{edition.copy}</p>
-            <a href={edition.href} className={styles.textLink}>
-              {edition.label}
-              <span>↗</span>
-            </a>
-          </div>
-          <motion.figure
-            className={styles.editionPhoto}
-            initial={false}
-            whileInView={reduced ? {} : { y: 0, rotate: i % 2 ? 2 : -2 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ amount: 0.3 }}
-            whileHover={reduced ? {} : { rotate: 0 }}
-          >
-            <a href={edition.href}>
-              <img
-                src={edition.image}
-                alt={edition.alt}
-                width={1600}
-                height={900}
-                loading="lazy"
-              />
-              <span className={styles.photoArrow} aria-hidden="true">
-                ↗
-              </span>
-            </a>
-            <figcaption>{edition.caption}</figcaption>
-          </motion.figure>
-        </article>
-      ))}
-    </section>
   );
 }
 

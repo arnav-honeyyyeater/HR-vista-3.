@@ -3,9 +3,9 @@ import { Hero } from "@/components/site/Hero";
 import { ChristIntro } from "@/components/site/ChristIntro";
 import {
   Journey,
-  EditionJourney,
   JourneyFinale,
 } from "@/components/site/Journey";
+import { EditionJourney } from "@/components/site/EditionJourney";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { People } from "@/components/site/People";
 import { SponsorTeaser } from "@/components/site/Sponsors";

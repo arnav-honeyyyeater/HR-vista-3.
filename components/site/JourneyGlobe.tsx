@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties, type MutableRefObject 
 import * as THREE from "three";
 import styles from "./GlobeControls.module.css";
 
-export type JourneyMotion = { progress: number; x: number; y: number };
+export type JourneyMotion = { progress: number; x: number; y: number; visible: boolean };
 type Geography = {
   features: {
     geometry: { type: string; coordinates: number[][][] | number[][][][] };
@@ -109,7 +109,7 @@ export default function JourneyGlobe({
       );
     };
     const markerGeometry = new THREE.SphereGeometry(0.012, 12, 8);
-    const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xf4c980 });
+    const markerMaterial = new THREE.MeshBasicMaterial({ color: 0xf4c980, transparent: true });
     const marker = new THREE.Mesh(markerGeometry, markerMaterial);
     marker.position.copy(point(18.4, 73.5, 1.015));
     globe.add(marker);
@@ -184,23 +184,34 @@ export default function JourneyGlobe({
     renderer.domElement.addEventListener("webglcontextlost", onLoss);
     renderer.domElement.addEventListener("webglcontextrestored", onRestore);
     let lastTime = 0;
+    let descentAngle: number | null = null;
+    let descentTarget = 0;
     const render = (time: number) => {
       if (!visible || document.hidden || disposed || contextLost) return;
       const p = motion.current.progress;
-      if (shell.current) shell.current.inert = !reducedRef.current && p > 0.27;
-      if (p > 0.5 && !reducedRef.current) return;
+      if (!motion.current.visible && !reducedRef.current) return;
       const dt = Math.min((time - lastTime) / 16.67 || 1, 3);
       lastTime = time;
       const state = spin.current;
-      if (!state.dragging && !pauseRef.current) {
+      const zoom = reducedRef.current ? 0 : p;
+      if (zoom > .001 && descentAngle === null) {
+        descentAngle = state.angle;
+        descentTarget = Math.round(state.angle / (Math.PI * 2)) * Math.PI * 2;
+        state.velocity = 0;
+        state.target = state.angle;
+      } else if (zoom <= .001) descentAngle = null;
+      if (!state.dragging && !pauseRef.current && descentAngle === null) {
         state.target += state.velocity * dt;
         state.velocity *= Math.pow(0.94, dt);
       }
       state.angle += (state.target - state.angle) * (reducedRef.current ? 1 : 1 - Math.pow(0.86, dt));
-      globe.rotation.y = state.angle;
+      marker.scale.setScalar(1 - zoom * .9);
+      markerMaterial.opacity = 1 - THREE.MathUtils.smoothstep(zoom, .5, .88);
+      // Restore the visitor's rotation on reverse scroll; settle onto western
+      // India during the descent even if the globe was spun beforehand.
+      globe.rotation.y = descentAngle === null ? state.angle : THREE.MathUtils.lerp(descentAngle, descentTarget, zoom);
       const elapsed = time - revealAt.current;
       globe.rotation.z = reducedRef.current ? 0 : Math.sin(elapsed / 43) * Math.exp(-elapsed / 220) * .055;
-      const zoom = THREE.MathUtils.smoothstep(p, 0.06, 0.43);
       // Fit the whole sphere before zooming, including tall tablet canvases.
       const horizontalHalfFov = Math.atan(
         Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect,
@@ -208,9 +219,9 @@ export default function JourneyGlobe({
       const distance = Math.max(3.55, 1.05 / Math.sin(horizontalHalfFov));
       camera.position.copy(
         point(
-          23 - zoom * 4 + motion.current.y * 2,
-          54 + zoom * 20 + motion.current.x * 3,
-          distance * (1 - zoom * 0.32),
+          23 - zoom * 4.5 + motion.current.y * 2 * (1 - zoom),
+          54 + zoom * 19.3 + motion.current.x * 3 * (1 - zoom),
+          THREE.MathUtils.lerp(distance, 1.18, zoom),
         ),
       );
       camera.lookAt(0, 0, 0);
@@ -252,6 +263,7 @@ export default function JourneyGlobe({
   }, [motion]);
   return (
     <div ref={shell} className={styles.shell} data-globe-interactive data-discovering={revealing}>
+      <div ref={host} className="journey-globe" aria-hidden="true" />
       <div className={styles.dragSurface} tabIndex={0} role="group" aria-label="Interactive earth. Drag or use arrow keys to spin. Shake back and forth to find a surprise, or press Space. Home resets the globe."
         onKeyDown={(event) => {
           if (!["ArrowLeft", "ArrowRight", "Home", " ", "Enter"].includes(event.key)) return;
@@ -298,7 +310,6 @@ export default function JourneyGlobe({
         }}
         onPointerCancel={() => { spin.current.dragging = false; spin.current.velocity = 0; }}
         onLostPointerCapture={() => { spin.current.dragging = false; }}>
-        <div ref={host} className="journey-globe" aria-hidden="true" />
         {revealing && <div key={discovery} className={styles.discovery} aria-hidden="true" data-globe-egg>
           <div className={styles.shockwave} />
           {["HR VISTA", "CHRIST"].map((name, i) => <div key={name} className={styles.eggBadge} data-brand={name} style={{ "--brand": i, "--tilt": i ? "7deg" : "-9deg", "--drift": i ? "1" : "-1" } as CSSProperties}>

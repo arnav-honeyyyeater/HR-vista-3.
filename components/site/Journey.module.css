@@ -5,7 +5,6 @@
   isolation: isolate;
 }
 .journey :is(a, button, summary):focus-visible,
-.editions a:focus-visible,
 .finale a:focus-visible {
   outline: 2px solid #b7d1ff;
   outline-offset: 7px;
@@ -41,6 +40,7 @@
 .earth :global(.journey-globe) {
   position: absolute;
   inset: 0;
+  pointer-events: none;
 }
 .earth :global(canvas) {
   width: 100%;
@@ -55,7 +55,7 @@
   aspect-ratio: 1;
   left: 19.5%;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) scale(var(--earth-zoom, 1));
   border-radius: 50%;
   background: radial-gradient(
     circle at 35% 30%,
@@ -99,7 +99,7 @@
   width: 68%;
   height: 86%;
   opacity: 0;
-  transform-origin: 40% 40%;
+  transform-origin: 65% 62%;
 }
 .mapDrawing {
   width: 100%;
@@ -182,15 +182,15 @@
 .staticMap { display: none; }
 .cityScene {
   position: absolute;
-  top: 15%;
+  top: 18%;
   right: 4%;
-  width: 50%;
-  height: 72%;
+  width: 48%;
+  height: 64%;
   margin: 0;
   background: #13253b;
   border: 1px solid #91b1d12b;
   overflow: hidden;
-  opacity: 0;
+  opacity: 1;
 }
 .cityScene::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #050b1444, transparent 35%, #050b1411 55%, #050b14e8); pointer-events: none; }
 .cityPhoto { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 56% 52%; }
@@ -213,7 +213,9 @@
 .cityCredits { display: flex; flex-direction: column; gap: 4px; margin-top: 24px; font-size: 8px; color: #c1d0e5; line-height: 1.6; }
 .cityCredits a { pointer-events: auto; text-decoration: underline; text-underline-offset: 3px; }
 .cityCredits a:hover { color: #fff; }
-.staticCity { display: none; }
+.arrival { min-height: 120svh; background: #050b14; }
+.arrival .chapterCopy { position: relative; width: 43%; }
+.arrivalVisual { position: absolute; inset: 0; pointer-events: none; }
 .eyebrow {
   font-family: var(--font-body), sans-serif;
   font-size: 10px;
@@ -227,7 +229,6 @@
   margin: 0 0 34px;
 }
 .chapterCopy h2,
-.editionsHeader h2,
 .finale h2 {
   font-family: var(--font-display), sans-serif;
   font-size: clamp(56px, 6.5vw, 106px);
@@ -237,7 +238,6 @@
   margin: 0 0 30px;
 }
 .chapterCopy h2 em,
-.editionsHeader h2 em,
 .finale h2 em {
   font: inherit;
   color: #a6c5ff;
@@ -374,153 +374,6 @@
   text-decoration: underline;
   padding: 10px 0;
 }
-.editions {
-  position: relative;
-  background: #eae9e2;
-  color: #142031;
-  padding: 110px 6vw 20px;
-  z-index: 2;
-  margin-top: -36px;
-  border-radius: 36px 36px 0 0;
-  scroll-margin-top: var(--nav-h, 64px);
-}
-.editionsHeader {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: end;
-  column-gap: 6vw;
-  padding-bottom: 70px;
-}
-.editionsHeader .eyebrow {
-  grid-column: 1/-1;
-  color: #4b6080;
-}
-.editionsHeader h2 {
-  margin: 0;
-  font-size: clamp(48px, 5.8vw, 90px);
-}
-.editionsHeader h2 em {
-  color: #405c83;
-}
-.editionsHeader > p:last-child {
-  font-size: 14px;
-  line-height: 1.8;
-  max-width: 230px;
-  padding-bottom: 5px;
-  justify-self: end;
-}
-.editionNav {
-  position: sticky;
-  top: var(--nav-h, 72px);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  z-index: 8;
-  background: #eae9e2f5;
-  backdrop-filter: blur(12px);
-  border-block: 1px solid #b9bec5;
-}
-.editionNav a {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 18px 20px;
-  border-right: 1px solid #b9bec5;
-  transition:
-    color 0.2s,
-    background-color 0.2s;
-}
-.editionNav a:last-child {
-  border: 0;
-}
-.editionNav a > span {
-  font-size: 8px;
-  letter-spacing: 0.1em;
-}
-.editionNav strong {
-  font:
-    400 32px/1 var(--font-display),
-    sans-serif;
-  letter-spacing: -0.04em;
-}
-.editionNav a > span:last-child {
-  margin-left: auto;
-}
-.editionNav a[aria-current] {
-  background: #16283e;
-  color: #e8f0ff;
-}
-.edition {
-  display: grid;
-  grid-template-columns: 0.85fr 1.15fr;
-  gap: 8vw;
-  align-items: center;
-  min-height: 85svh;
-  padding-block: 100px;
-  border-bottom: 1px solid #b9bec5;
-  scroll-margin-top: calc(var(--nav-h, 72px) + 100px);
-}
-.edition:last-child {
-  border: 0;
-}
-.editionInfo .eyebrow {
-  color: #4d617b;
-  margin-bottom: 16px;
-}
-.editionNumber {
-  font:
-    400 clamp(100px, 13vw, 190px)/0.9 var(--font-display),
-    sans-serif;
-  letter-spacing: -0.09em;
-  display: block;
-  color: #365985;
-  margin: 28px 0;
-}
-.editionInfo h3 {
-  font:
-    400 clamp(26px, 3vw, 45px)/1.1 var(--font-display),
-    sans-serif;
-  letter-spacing: -0.045em;
-  margin: 20px 0;
-}
-.editionInfo .body {
-  color: #4c5969;
-  font-size: 14px;
-}
-.editionPhoto {
-  background: #faf9f5;
-  padding: 12px;
-  box-shadow: 0 22px 45px #1f2e4212;
-}
-.editionPhoto a {
-  position: relative;
-  display: block;
-}
-.editionPhoto img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1.22;
-  object-fit: cover;
-  display: block;
-  filter: saturate(0.75);
-}
-.editionPhoto figcaption {
-  padding: 18px 8px 8px;
-  font-size: 10px;
-  line-height: 1.5;
-  color: #44566c;
-}
-.photoArrow {
-  position: absolute;
-  bottom: 18px;
-  right: 18px;
-  background: #fff;
-  color: #142031;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-}
 .finale {
   position: relative;
   overflow: hidden;
@@ -612,12 +465,6 @@
   .arrival .chapterCopy { width: 44%; }
   .cityTopline { left: 18px; right: 18px; font-size: 7px; }
   .cityCaption { left: 20px; right: 20px; }
-  .editionNav a > span:last-child {
-    display: none;
-  }
-  .edition {
-    gap: 5vw;
-  }
 }
 @media (max-width: 700px) {
   .travelChapter {
@@ -689,7 +536,9 @@
   .flightReadout > div:first-child { font-size: 8px; }
   .flightReadout p { font-size: 10px; margin-top: 10px; }
   .flightStage .textLink { margin-top: 14px; font-size: 11px; }
-  .cityScene { top: 9%; right: 7%; width: 86%; height: 36%; }
+  .arrival { display: flex; flex-direction: column; align-items: stretch; gap: 36px; min-height: 0; padding-top: 90px; }
+  .arrivalVisual { position: relative; inset: auto; width: 100%; height: 380px; }
+  .cityScene { top: 0; right: 0; width: 100%; height: 100%; }
   .cityTopline { top: 14px; left: 14px; right: 14px; font-size: 7px; }
   .cityCaption { left: 16px; right: 16px; bottom: 14px; }
   .cityLocation > span { font-size: 7px; margin-bottom: 8px; }
@@ -703,50 +552,6 @@
   }
   .venue {
     margin-top: 24px;
-  }
-  .editions {
-    padding: 75px 7vw 15px;
-    margin-top: -24px;
-    border-radius: 24px 24px 0 0;
-  }
-  .editionsHeader {
-    display: block;
-    padding-bottom: 35px;
-  }
-  .editionsHeader h2 {
-    font-size: 48px;
-  }
-  .editionsHeader > p:last-child {
-    margin-top: 24px;
-    max-width: none;
-    font-size: 12px;
-  }
-  .editionNav a {
-    padding: 15px 8px;
-    justify-content: center;
-    gap: 8px;
-  }
-  .editionNav strong {
-    font-size: 25px;
-  }
-  .editionNav a > span {
-    font-size: 7px;
-  }
-  .edition {
-    grid-template-columns: 1fr;
-    gap: 40px;
-    padding-block: 55px;
-    min-height: 0;
-  }
-  .editionNumber {
-    font-size: 110px;
-    margin: 18px 0;
-  }
-  .editionInfo h3 {
-    font-size: 32px;
-  }
-  .editionPhoto img {
-    aspect-ratio: 1.4;
   }
   .finale {
     padding: 100px 7vw 0;
@@ -777,9 +582,7 @@
   .regionalMap {
     display: none;
   }
-  .scene .cityScene { display: none; }
-  .staticCity { display: block; position: absolute; top: 18%; right: 6%; width: 46%; height: 64%; }
-  .staticCity .cityScene { position: relative; inset: auto; width: 100%; height: 100%; opacity: 1; }
+  .cityScene, .cityPhoto { transform: none !important; }
   .flightChapter { min-height: 100svh; }
   .flightStage { position: relative; height: auto; min-height: 100svh; }
   .staticMap { display: block; position: absolute; top: 10%; right: 0; width: 65%; height: 80%; pointer-events: none; opacity: .8; }
@@ -793,11 +596,7 @@
   .travelChapter {
     min-height: 85svh;
   }
-  .editionNav {
-    position: static;
-  }
   .journey *,
-  .editions *,
   .finale * {
     animation: none !important;
     transition: none !important;
@@ -808,7 +607,7 @@
   .flightStage { display: flex; flex-direction: column; align-items: stretch; padding-top: 60px; gap: 12px; }
   .staticMap { position: relative; top: auto; right: auto; width: 100%; height: 260px; }
   .arrival { flex-direction: column; align-items: stretch; gap: 32px; padding-top: 70px; }
-  .staticCity { position: relative; inset: auto; width: 100%; height: 290px; }
+  .arrivalVisual { height: 320px; }
   .sceneShade { background: linear-gradient(0deg, #050b14 8%, #050b14bb 30%, transparent 60%); }
 }
 @media (max-height: 740px) and (min-width: 701px) {
