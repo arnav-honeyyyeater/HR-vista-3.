@@ -85,15 +85,15 @@ export function EditionsArchive() {
     <main id="main-content" className={`hv ${styles.archive}`}>
         <header className={styles.masthead} ref={masthead}>
           <div className={`hv-container ${styles.mastheadInner}`}>
-            <div className={styles.topline}><p>The HR VISTA archive</p><p>Lavasa, India <span aria-hidden="true">↗</span> 2025</p></div>
+            <div className={styles.topline}><p>THE ARCHIVE / 01—02</p><p>Lavasa, India <span aria-hidden="true">↗</span> 2025</p></div>
             <div className={styles.mastheadGrid}>
               <div className={styles.heroCopy}>
-                <h1 className={styles.heroTitle}><span>Human</span><span>signals<span className={styles.titleDot}>.</span></span></h1>
-                <p className={styles.heroDescription}>The conversations. The community.<br />The moments that stay with us.</p>
+                <h1 className={styles.heroTitle}><span>Where it</span><span>all began<span className={styles.titleDot}>.</span></span></h1>
+                <p className={styles.heroDescription}>Before Mumbai.<br />Two chapters that shaped us.</p>
                 <p className={styles.heroNote}>Two editions in Lavasa brought HR leaders, students and industry together. This is their story.</p>
               </div>
               <div className={styles.photoSpread}>
-                <span className={styles.orbitMark} aria-hidden="true">✳</span>
+                <span className={styles.orbitMark} aria-hidden="true">2025</span>
                 <motion.a className={styles.heroPhotoMain} href="#hr-vista-2" style={{ y: reduceMotion ? 0 : photoDrift, rotate: reduceMotion ? 0 : 5 }} whileHover={reduceMotion ? undefined : { rotate: 0, scale: 1.025 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/media/flickr/story-1.jpg" alt="Two speakers in conversation at HR VISTA 2.0, November 2025" width={1600} height={900} />
@@ -114,7 +114,7 @@ export function EditionsArchive() {
           </div>
         </header>
         <div className={styles.signalStrip} aria-hidden="true"><span>People make the future</span><span>↗</span><span>HR VISTA / 2025</span></div>
-        {galleries.map((gallery) => {
+        {[...galleries].reverse().map((gallery) => {
           const edition = content.pastEditions.find((item) => item.edition === gallery.edition);
           return edition ? <EditionChapter key={gallery.id} id={gallery.id} edition={edition} photos={gallery.photos} /> : null;
         })}
@@ -127,7 +127,7 @@ export function EditionsArchive() {
             <p className={styles.upcomingLocation}>Mumbai · BKC · Jio Grounds</p>
             <p className="hv-copy">{content.hero.theme}. Two days of keynote conversations, leadership panels and connections across the HR community.</p>
             <div className={styles.actions}>
-              <Link className={styles.nextAction} href="/brochure">Read the brochure <span aria-hidden="true">↗</span></Link>
+              <a className={styles.nextAction} href="/brochure/HR-VISTA-3.0.pdf" download>Download brochure <span aria-hidden="true">↓</span></a>
               <Link className="hv-link" href="/">Explore HR VISTA 3.0 <span aria-hidden="true">→</span></Link>
             </div>
           </div>

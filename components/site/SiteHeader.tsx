@@ -6,10 +6,10 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./SiteHeader.module.css";
 
 const LINKS = [
-  { label: "About", href: "/#overview" },
-  { label: "Experience", href: "/#experience" },
-  { label: "Editions", href: "/work" },
-  { label: "The people", href: "/#audience" },
+  { label: "Our journey", href: "/#lavasa" },
+  { label: "Mumbai", href: "/#mumbai" },
+  { label: "Editions", href: "/#editions" },
+  { label: "Brochure", href: "/brochure" },
 ];
 
 export function SiteHeader() {
@@ -74,7 +74,7 @@ export function SiteHeader() {
           {LINKS.map((link) => <Link key={link.label} href={resolve(link.href)} aria-current={pathname === link.href ? "page" : undefined}>{link.label}</Link>)}
         </nav>
         <div className={styles.actions}>
-          <Link href="/brochure" className={styles.join}>Read the brochure <span aria-hidden="true">↗</span></Link>
+          <a href="/brochure/HR-VISTA-3.0.pdf" download className={styles.join}>Download brochure <span aria-hidden="true">↓</span></a>
           <button ref={toggleRef} className={styles.toggle} type="button" aria-label={open ? "Close menu" : "Open menu"} aria-expanded={open} aria-controls="mobile-navigation" onClick={() => setOpen(!open)}>
             <span className={open ? styles.topOpen : ""} />
             <span className={open ? styles.bottomOpen : ""} />

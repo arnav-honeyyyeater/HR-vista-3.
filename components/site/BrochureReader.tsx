@@ -17,16 +17,16 @@ export function BrochureMasthead() {
         <div className={styles.introTopline}><p>HR VISTA 3.0 / The digital reading room</p><p>Mumbai, 2026 <span aria-hidden="true">↗</span></p></div>
         <div className={styles.introGrid}>
           <div className={styles.introCopy}>
-            <h1 className={styles.introTitle}><span>Field</span><span>notes<span className={styles.titleDot}>.</span></span></h1>
-            <p className={styles.introDeck}>A future of work<br />worth reading about.</p>
+            <h1 className={styles.introTitle}><span>Your next</span><span>chapter<span className={styles.titleDot}>.</span></span></h1>
+            <p className={styles.introDeck}>The vision. The people. The possibilities.</p>
             <p className={styles.introDescription}>The vision, the people and the experience of HR VISTA 3.0. The complete official brochure, one page at a time.</p>
-            <a className={styles.readLink} href="#brochure-reader"><span>Step inside the brochure</span><span aria-hidden="true">↓</span></a>
+            <a className={styles.downloadLink} href="/brochure/HR-VISTA-3.0.pdf" download>Download brochure PDF <span aria-hidden="true">↓</span></a><a className={styles.readLink} href="#brochure-reader"><span>Step inside the brochure</span><span aria-hidden="true">↓</span></a>
           </div>
           <div className={styles.coverComposition}>
             <span className={styles.coverCount} aria-hidden="true">12</span>
             <motion.a href="#brochure-reader" className={styles.coverStack} style={{ y: reduceMotion ? 0 : coverDrift, rotate: reduceMotion ? 0 : 7 }} whileHover={reduceMotion ? undefined : { rotate: 0, scale: 1.025 }} aria-label="Start reading the official HR VISTA 3.0 brochure">
               <Image className={styles.introCover} src={brochurePages[0].src} alt="HR VISTA 3.0 official brochure cover" width={334} height={422} sizes="(max-width: 560px) 220px, (max-width: 900px) 280px, 334px" priority />
-              <span className={styles.coverCaption}>The official edition <span aria-hidden="true">↗</span></span>
+              <span className={styles.coverCaption}>HR VISTA 3.0 / 2026 <span aria-hidden="true">↗</span></span>
             </motion.a>
             <div className={styles.coverTag}><span>12 pages</span><span>One shared future.</span></div>
           </div>

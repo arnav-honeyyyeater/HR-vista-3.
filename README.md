@@ -1,10 +1,8 @@
-# HR VISTA 3.0
+# HR VISTA 3.0 — Lavasa roots, Mumbai horizons
 
-An interactive event website for the Centre for Placement and Career Guidance, CHRIST (Deemed to be University), Pune Lavasa Campus.
+Next.js 15 / React 19 / TypeScript. The original interactive opening hero is preserved. The rest of the homepage is a scroll narrative: Lavasa → globe and regional map → Mumbai → editions 1.0, 2.0 and the planned 3.0 → brochure.
 
-The original opening hero and its photo wall are preserved. The rest of the site uses the **Human Signals** direction: oversized typography, cobalt and ink surfaces, layered event photography, pointer-responsive graphics, and accessible exploration.
-
-## Run locally
+## Run
 
 ```powershell
 npm install
@@ -17,31 +15,27 @@ Open http://127.0.0.1:3005.
 node node_modules/typescript/bin/tsc --noEmit --incremental false
 npm run build
 npm run start -- --hostname 127.0.0.1 --port 3005
+npm run check:preview
 ```
 
-## Pages
+## Pages and behavior
 
-- `/`: preserved hero, overview, interactive programme stage, audience radar, edition previews, institution/venue, discovery finale.
-- `/work`: completed editions with captioned photo galleries and keyboard-accessible lightboxes.
-- `/brochure`: all twelve brochure pages, thumbnails, page selector, reading mode, and zoom. Deep links such as `/brochure?page=11` open the relevant page.
+- `/`: CHRIST intro (once per session, skippable), preserved hero, three travel chapters, edition timeline, closing download action.
+- `/#lavasa`, `/#journey`, `/#mumbai`, `/#editions`, `/#edition-1` through `/#edition-3`, `/#next`: direct story links.
+- `/work`: chronological archive with original edition photography, photo selection and native-dialog lightboxes.
+- `/brochure?page=11`: complete 12-page reader, deep links, keyboard navigation and zoom.
+- `/brochure/HR-VISTA-3.0.pdf`: downloadable document rebuilt without cropping from the supplied brochure page PNGs. It is image-based; text summaries are available in the reader.
 
-The active site focuses on design and browsing. There is no registration page or submission UI. The pre-existing registration/contact APIs are outside this redesign.
+`Journey.tsx` orchestrates the story with GSAP ScrollTrigger; `JourneyGlobe.tsx` is a lazy-loaded Three.js enhancement. The regional map is an original schematic, not a road route or an exact entrance location. Globe boundaries come from Natural Earth (see the provenance note in `public/media/journey`).
 
-## Main files
+Important content and controls stay in HTML. Reduced motion disables the intro and globe and presents the route without scroll scrubbing. WebGL creation failure leaves the CSS globe and SVG map available. Rendering pauses when offscreen or the tab is hidden; GPU work stops once the map replaces the globe. Native page scroll drives the timeline alongside the existing Lenis provider.
 
-- `app/page.tsx`: homepage composition.
-- `components/site/Hero.tsx` and `Hero.module.css`: preserved opening.
-- `components/site/HomeInterior.module.css` and `HomeMotion.tsx`: visual system and bounded pointer/scroll motion.
-- `components/site/EditionsArchive.tsx`, `PhotoLightbox.tsx`: archive exploration.
-- `components/site/BrochureReader.tsx`, `lib/data/brochure.ts`: reader and shared twelve-page document metadata.
-- `app/globals.css`: original styles plus scoped `.hv` foundations.
-- `lib/data/content.ts`: event copy.
-- `docs/FLICKR-MANIFEST.md`: local media provenance.
+## Content
 
-## Content and interaction
+Existing brochure facts are retained: 21–22 November 2026, Jio Grounds, BKC, Mumbai. Participation figures are expected, not confirmed attendance. All event photographs show historical editions and are captioned accordingly. No registration/contact API changes or deployment are included.
 
-Event facts follow the supplied brochure: **21–22 November 2026, Mumbai, BKC, Jio Grounds**. Participation figures are expected, rather than confirmed attendance. Photography in the redesigned archive is assigned to the correct historical edition; the hero media remains unchanged.
+## Brochure rebuild
 
-Display typography is locally hosted **Nohemi**; body typography is **Manrope**. Animation respects reduced motion, touch layouts keep controls visible, and native dialogs support Escape, focus containment, and focus restoration. The brochure consists of PNG pages; the site does not advertise an unavailable original PDF.
+Run `python scripts/build-brochure.py` with Pillow and ReportLab installed. The output is the static public PDF; all 12 supplied pages retain their original proportions and resolution. Use Poppler to inspect the exported document.
 
-Work is on the local branch `codex/hr-vista-interior-redesign`. No push or deployment is part of this work.
+Development and production outputs are separate (`.next` and `.next-production`), so a live development preview cannot overwrite production JavaScript bundles. Run `npm run check:preview` against the running production preview to verify routes, bundles and the PDF download. Detailed browser evidence and verification limits are recorded in `docs/JOURNEY-QA/VERIFICATION.md`.

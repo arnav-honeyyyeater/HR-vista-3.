@@ -1,0 +1,766 @@
+.journey {
+  position: relative;
+  background: #050b14;
+  color: #f5f4ef;
+  isolation: isolate;
+}
+.journey :is(a, button, summary):focus-visible,
+.editions a:focus-visible,
+.finale a:focus-visible,
+.intro button:focus-visible {
+  outline: 2px solid #b7d1ff;
+  outline-offset: 7px;
+}
+.scene {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  margin-bottom: -100svh;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+.sceneGrid {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 77% 50%, #18366755, transparent 65%),
+    linear-gradient(#788bab08 1px, transparent 1px),
+    linear-gradient(90deg, #788bab08 1px, transparent 1px);
+  background-size:
+    auto,
+    80px 80px,
+    80px 80px;
+}
+.earth {
+  position: absolute;
+  width: 76%;
+  height: 100%;
+  right: -11%;
+  top: 0;
+}
+.earth :global(.journey-globe) {
+  position: absolute;
+  inset: 0;
+}
+.earth :global(canvas) {
+  width: 100%;
+  height: 100%;
+}
+.earth :global(.journey-globe[data-failed="true"] canvas) {
+  visibility: hidden;
+}
+.globeFallback {
+  position: absolute;
+  width: 61%;
+  aspect-ratio: 1;
+  left: 19.5%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #223e69,
+    #08182e 57%,
+    #030912 80%
+  );
+  border: 1px solid #5783b37a;
+  box-shadow:
+    0 0 80px #3c76ff16,
+    inset 0 0 50px #729dde24;
+}
+.globeFallback::after {
+  content: "";
+  position: absolute;
+  inset: 6% 24%;
+  border-inline: 1px solid #8bafea30;
+  border-radius: 50%;
+}
+.orbitLabel {
+  position: absolute;
+  bottom: 12%;
+  left: 25%;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: #b2c8e7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.orbitLabel i {
+  width: 5px;
+  height: 5px;
+  background: #efc58a;
+  border-radius: 50%;
+}
+.regionalMap {
+  position: absolute;
+  top: 7%;
+  right: -5%;
+  width: 68%;
+  height: 86%;
+  opacity: 0;
+}
+.mapDrawing {
+  width: 100%;
+  height: 100%;
+}
+.mapNote {
+  position: absolute;
+  bottom: 2%;
+  right: 12%;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  color: #8d9fb8;
+}
+.sceneShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #050b14 4%,
+    #050b14dd 25%,
+    transparent 65%
+  );
+}
+.travelChapter {
+  min-height: 110svh;
+  display: flex;
+  align-items: center;
+  padding: 110px 6vw;
+  scroll-margin-top: 65px;
+}
+.chapterCopy {
+  max-width: 650px;
+  width: 48%;
+}
+.eyebrow {
+  font-family: var(--font-body), sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  line-height: 1.7;
+  display: flex;
+  gap: 25px;
+  color: #adc2df;
+  text-transform: uppercase;
+  margin: 0 0 34px;
+}
+.chapterCopy h2,
+.editionsHeader h2,
+.finale h2 {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(56px, 6.5vw, 106px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  margin: 0 0 30px;
+}
+.chapterCopy h2 em,
+.editionsHeader h2 em,
+.finale h2 em {
+  font: inherit;
+  color: #a6c5ff;
+}
+.body {
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.85;
+  color: #adb9ca;
+  max-width: 390px;
+  margin: 0 0 24px;
+}
+.lavasaPhoto {
+  width: min(330px, 82%);
+  margin: 32px 0 0;
+}
+.lavasaPhoto img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2.25;
+  object-fit: cover;
+  filter: saturate(0.72);
+  border-radius: 2px;
+}
+.lavasaPhoto figcaption {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: #b5c0cf;
+}
+.textLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  min-height: 44px;
+  border-bottom: 1px solid #6a7e9b65;
+  font-size: 12px;
+  margin-top: 22px;
+  color: inherit;
+  text-decoration: none;
+}
+.textLink span {
+  transition: transform 0.2s;
+  font-size: 19px;
+}
+.textLink:hover span {
+  transform: translate(3px, -3px);
+}
+.routeLegend {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  margin: 48px 0 28px;
+  max-width: 335px;
+}
+.routeLegend > span {
+  font:
+    400 43px/1 var(--font-display),
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+.routeLegend span span {
+  display: block;
+  font:
+    10px/1.4 var(--font-body),
+    sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #adc2df;
+  margin-top: 12px;
+}
+.routeLegend i {
+  position: relative;
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, #efc58a, #8bb6ff);
+}
+.routeLegend i::after {
+  content: "↗";
+  position: absolute;
+  right: 0;
+  top: -11px;
+  font-size: 18px;
+  color: #abcaff;
+}
+.small {
+  color: #a5b2c5;
+  font-size: 11px;
+}
+.venue {
+  max-width: 370px;
+  border-top: 1px solid #6b81a14d;
+  padding-top: 25px;
+  margin-top: 38px;
+}
+.venue > span {
+  display: block;
+  color: #c6d7ed;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+.venue strong {
+  display: block;
+  font:
+    400 30px/1.3 var(--font-display),
+    sans-serif;
+  margin: 12px 0;
+}
+.venue summary {
+  cursor: pointer;
+  font-size: 12px;
+  padding: 12px 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+}
+.venue summary::-webkit-details-marker {
+  display: none;
+}
+.venue details p {
+  color: #afbdd0;
+  font-size: 13px;
+  line-height: 1.7;
+  padding-block: 12px;
+}
+.venue details a {
+  display: inline-block;
+  font-size: 12px;
+  text-decoration: underline;
+  padding: 10px 0;
+}
+.editions {
+  position: relative;
+  background: #eae9e2;
+  color: #142031;
+  padding: 110px 6vw 20px;
+}
+.editionsHeader {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: end;
+  column-gap: 6vw;
+  padding-bottom: 70px;
+}
+.editionsHeader .eyebrow {
+  grid-column: 1/-1;
+  color: #4b6080;
+}
+.editionsHeader h2 {
+  margin: 0;
+  font-size: clamp(48px, 5.8vw, 90px);
+}
+.editionsHeader h2 em {
+  color: #405c83;
+}
+.editionsHeader > p:last-child {
+  font-size: 14px;
+  line-height: 1.8;
+  max-width: 230px;
+  padding-bottom: 5px;
+  justify-self: end;
+}
+.editionNav {
+  position: sticky;
+  top: var(--nav-h, 72px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  z-index: 8;
+  background: #eae9e2f5;
+  backdrop-filter: blur(12px);
+  border-block: 1px solid #b9bec5;
+}
+.editionNav a {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 20px;
+  border-right: 1px solid #b9bec5;
+  transition:
+    color 0.2s,
+    background-color 0.2s;
+}
+.editionNav a:last-child {
+  border: 0;
+}
+.editionNav a > span {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+.editionNav strong {
+  font:
+    400 32px/1 var(--font-display),
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+.editionNav a > span:last-child {
+  margin-left: auto;
+}
+.editionNav a[aria-current] {
+  background: #16283e;
+  color: #e8f0ff;
+}
+.edition {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 8vw;
+  align-items: center;
+  min-height: 85svh;
+  padding-block: 100px;
+  border-bottom: 1px solid #b9bec5;
+  scroll-margin-top: calc(var(--nav-h, 72px) + 100px);
+}
+.edition:last-child {
+  border: 0;
+}
+.editionInfo .eyebrow {
+  color: #4d617b;
+  margin-bottom: 16px;
+}
+.editionNumber {
+  font:
+    400 clamp(100px, 13vw, 190px)/0.9 var(--font-display),
+    sans-serif;
+  letter-spacing: -0.09em;
+  display: block;
+  color: #365985;
+  margin: 28px 0;
+}
+.editionInfo h3 {
+  font:
+    400 clamp(26px, 3vw, 45px)/1.1 var(--font-display),
+    sans-serif;
+  letter-spacing: -0.045em;
+  margin: 20px 0;
+}
+.editionInfo .body {
+  color: #4c5969;
+  font-size: 14px;
+}
+.editionPhoto {
+  background: #faf9f5;
+  padding: 12px;
+  box-shadow: 0 22px 45px #1f2e4212;
+}
+.editionPhoto a {
+  position: relative;
+  display: block;
+}
+.editionPhoto img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1.22;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.75);
+}
+.editionPhoto figcaption {
+  padding: 18px 8px 8px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: #44566c;
+}
+.photoArrow {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  background: #fff;
+  color: #142031;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+.finale {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: #101d32;
+  color: #f5f4ef;
+  text-align: center;
+  padding: 150px 6vw 0;
+}
+.finale .eyebrow {
+  justify-content: center;
+}
+.finale h2 {
+  font-size: clamp(50px, 7vw, 110px);
+}
+.finale > p:not(.eyebrow) {
+  color: #bcc9dc;
+  font-size: 14px;
+  line-height: 1.8;
+}
+.finaleOrbit {
+  z-index: -1;
+  position: absolute;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid #789dd027;
+  border-radius: 50%;
+  top: 20%;
+  left: 0;
+  box-shadow:
+    0 0 0 70px #789dd008,
+    0 0 0 140px #789dd008;
+}
+.finaleActions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 35px;
+  margin: 36px 0 110px;
+  flex-wrap: wrap;
+}
+.finaleActions .textLink {
+  margin: 0;
+}
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 38px;
+  min-height: 54px;
+  padding: 16px 24px;
+  background: #dce8fc;
+  color: #101d32;
+  border-radius: 2px;
+  font-size: 13px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+.button:hover {
+  background: white;
+  transform: translateY(-3px);
+}
+.finaleMeta {
+  border-top: 1px solid #6b81a14d;
+  padding: 24px 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: #b7c8e1;
+  flex-wrap: wrap;
+}
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: #f3f1ea;
+  color: #142031;
+  animation: introOut 0.5s 1.3s both;
+}
+.introBrand {
+  text-align: center;
+  animation: brandIn 0.7s ease-out both;
+}
+.introBrand img {
+  width: min(340px, 75vw);
+  height: auto;
+  max-height: 155px;
+  object-fit: contain;
+  margin: 0 auto 42px;
+}
+.introBrand span {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  margin-bottom: 14px;
+}
+.introBrand strong {
+  display: block;
+  font:
+    500 35px/1 var(--font-display),
+    sans-serif;
+  letter-spacing: -0.04em;
+}
+.introBrand::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 1px;
+  margin: 35px auto 0;
+  background: #648ec8;
+  transform-origin: left;
+  animation: sweep 1.2s ease both;
+}
+.intro button {
+  position: absolute;
+  bottom: 35px;
+  right: 6vw;
+  font-size: 12px;
+  min-height: 44px;
+  cursor: pointer;
+}
+@keyframes introOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+@keyframes brandIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes sweep {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (min-width: 1700px) {
+  .chapterCopy {
+    margin-left: max(0px, calc((100vw - 1700px) / 2));
+  }
+}
+@media (max-width: 1023px) {
+  .chapterCopy {
+    width: 53%;
+  }
+  .chapterCopy h2 {
+    font-size: 65px;
+  }
+  .editionNav a > span:last-child {
+    display: none;
+  }
+  .edition {
+    gap: 5vw;
+  }
+}
+@media (max-width: 700px) {
+  .travelChapter {
+    min-height: 115svh;
+    align-items: flex-end;
+    padding: 100px 7vw 65px;
+  }
+  .chapterCopy {
+    width: 100%;
+    max-width: 480px;
+  }
+  .chapterCopy h2 {
+    font-size: clamp(48px, 12vw, 74px);
+    max-width: 95%;
+  }
+  .eyebrow {
+    margin-bottom: 22px;
+    font-size: 9px;
+  }
+  .body {
+    font-size: 14px;
+    max-width: 330px;
+  }
+  .earth {
+    width: 115%;
+    right: -30%;
+    top: -26%;
+    height: 92%;
+  }
+  .orbitLabel {
+    display: none;
+  }
+  .sceneShade {
+    background: linear-gradient(0deg, #050b14 8%, #050b14eb 43%, #050b1410 90%);
+  }
+  .lavasaPhoto {
+    width: 200px;
+    margin-top: 25px;
+  }
+  .lavasaPhoto figcaption {
+    font-size: 7px;
+  }
+  .lavasaPhoto figcaption span {
+    display: none;
+  }
+  .regionalMap {
+    width: 105%;
+    height: 76%;
+    top: -9%;
+    right: -5%;
+  }
+  .mapNote {
+    display: none;
+  }
+  .routeLegend {
+    margin: 25px 0;
+  }
+  .venue {
+    margin-top: 24px;
+  }
+  .editions {
+    padding: 75px 7vw 15px;
+  }
+  .editionsHeader {
+    display: block;
+    padding-bottom: 35px;
+  }
+  .editionsHeader h2 {
+    font-size: 48px;
+  }
+  .editionsHeader > p:last-child {
+    margin-top: 24px;
+    max-width: none;
+    font-size: 12px;
+  }
+  .editionNav a {
+    padding: 15px 8px;
+    justify-content: center;
+    gap: 8px;
+  }
+  .editionNav strong {
+    font-size: 25px;
+  }
+  .editionNav a > span {
+    font-size: 7px;
+  }
+  .edition {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-block: 55px;
+    min-height: 0;
+  }
+  .editionNumber {
+    font-size: 110px;
+    margin: 18px 0;
+  }
+  .editionInfo h3 {
+    font-size: 32px;
+  }
+  .editionPhoto img {
+    aspect-ratio: 1.4;
+  }
+  .finale {
+    padding: 100px 7vw 0;
+  }
+  .finale h2 {
+    font-size: 49px;
+  }
+  .finaleActions {
+    gap: 25px;
+    margin-bottom: 75px;
+  }
+  .finaleMeta {
+    justify-content: center;
+    font-size: 8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene {
+    position: absolute;
+    height: 100%;
+    inset: 0;
+    margin: 0;
+  }
+  .earth {
+    display: none;
+  }
+  .regionalMap {
+    opacity: 0.45;
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    margin-left: auto;
+  }
+  .sceneShade {
+    background: linear-gradient(90deg, #050b14 4%, #050b14df 40%, #050b1440);
+  }
+  .travelChapter {
+    min-height: 85svh;
+  }
+  .editionNav {
+    position: static;
+  }
+  .intro {
+    display: none;
+  }
+  .journey *,
+  .editions *,
+  .finale * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .mapDrawing {
+    transform: translate(var(--map-x, 0px), var(--map-y, 0px));
+    transition: transform 0.4s ease-out;
+  }
+}
