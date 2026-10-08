@@ -1,18 +1,20 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { JourneyMotion } from "./JourneyGlobe";
 import { content } from "@/lib/data/content";
+import { useReducedMotionPreference } from "@/lib/useReducedMotionPreference";
 import styles from "./Journey.module.css";
 
 const Globe = dynamic(() => import("./JourneyGlobe"), { ssr: false });
 const PDF = "/brochure/HR-VISTA-3.0.pdf";
 
-function RegionalMap() {
+function RegionalMap({ completed = false }: { completed?: boolean }) {
+  const id = useId().replace(/:/g, "");
   return (
     <svg
       className={styles.mapDrawing}
@@ -22,7 +24,7 @@ function RegionalMap() {
     >
       <defs>
         <pattern
-          id="map-grid"
+          id={`${id}-grid`}
           width="60"
           height="60"
           patternUnits="userSpaceOnUse"
@@ -34,18 +36,22 @@ function RegionalMap() {
             strokeOpacity=".12"
           />
         </pattern>
-        <linearGradient id="land" x2="1" y2="1">
+        <linearGradient id={`${id}-land`} x2="1" y2="1">
           <stop stopColor="#172d49" />
           <stop offset="1" stopColor="#091424" />
         </linearGradient>
-        <filter id="route-glow">
+        <filter id={`${id}-glow`}>
           <feGaussianBlur stdDeviation="5" />
         </filter>
+        <linearGradient id={`${id}-plane`} x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#fff" />
+          <stop offset="1" stopColor="#a6c5ff" />
+        </linearGradient>
       </defs>
-      <rect width="760" height="720" fill="url(#map-grid)" />
+      <rect width="760" height="720" fill={`url(#${id}-grid)`} />
       <path
         d="M280 0 269 65 285 107 262 148 277 178 266 211 281 234 272 257 290 281 283 306 304 332 300 367 315 395 310 426 333 470 339 512 366 568 373 610 401 674 406 720H760V0Z"
-        fill="url(#land)"
+        fill={`url(#${id}-land)`}
         stroke="#6585a7"
         strokeWidth="1.5"
       />
@@ -72,6 +78,14 @@ function RegionalMap() {
         MAHARASHTRA
       </text>
       <path
+        d="M493 450 Q480 255 294 278"
+        fill="none"
+        stroke="#afc8ef"
+        strokeOpacity=".25"
+        strokeWidth="1"
+        strokeDasharray="3 7"
+      />
+      <path
         data-route
         d="M493 450 Q480 255 294 278"
         pathLength="1"
@@ -79,7 +93,7 @@ function RegionalMap() {
         fill="none"
         stroke="#78a5ff"
         strokeWidth="9"
-        filter="url(#route-glow)"
+        filter={`url(#${id}-glow)`}
         opacity=".5"
       />
       <path
@@ -102,6 +116,7 @@ function RegionalMap() {
       />
       <circle cx="294" cy="278" r="7" fill="#bfd5ff" />
       <circle
+        data-arrival-ring
         cx="294"
         cy="278"
         r="24"
@@ -136,14 +151,47 @@ function RegionalMap() {
       <text x="691" y="23" fill="#afc8ef" fontSize="11">
         N
       </text>
+      <g data-airplane transform={completed ? "translate(294 278) rotate(-97)" : "translate(493 450) rotate(-4)"}>
+        <circle r="24" fill="#a6c5ff" opacity=".05" />
+        <circle r="17" fill="none" stroke="#b7d1ff" strokeOpacity=".18" />
+        <g className={styles.airplane}>
+          <path d="M0-23C-2-23-3-18-3-13V-5L-19 5V9L-3 4V15L-9 20V23L0 20 9 23V20L3 15V4L19 9V5L3-5V-13C3-18 2-23 0-23Z" fill={`url(#${id}-plane)`} stroke="#e4eeff" strokeWidth=".7" />
+          <path d="M0-17V16" stroke="#6789bd" strokeWidth="1" opacity=".55" />
+          <path d="M-3-11Q0-14 3-11" fill="none" stroke="#355c8c" strokeWidth="1.2" />
+        </g>
+      </g>
     </svg>
+  );
+}
+
+function MumbaiSetting({ staticView = false }: { staticView?: boolean }) {
+  return (
+    <figure className={styles.cityScene} data-city={staticView ? undefined : ""} aria-hidden={staticView ? undefined : true}>
+      <img
+        className={styles.cityPhoto}
+        src="/media/mumbai/marine-drive-blue-hour.webp"
+        alt="Mumbai’s Marine Drive waterfront and skyline at blue hour, with golden lights along the bay"
+        width={2000}
+        height={1334}
+        loading="lazy"
+        decoding="async"
+      />
+      <div className={styles.cityTopline}><span>A WIDER HORIZON</span><span>BOM / INDIA</span></div>
+      <figcaption className={styles.cityCaption}>
+        <div className={styles.cityLocation}><span>MARINE DRIVE · MUMBAI</span><strong>A city in motion.</strong></div>
+        <div className={styles.cityCredits}>
+          <span>Photo: <a href="https://commons.wikimedia.org/wiki/File:Marine_Lines_Mumbai_2021.jpg" target="_blank" rel="noreferrer">Dr Vikramjit Kakati</a> · <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a></span>
+          <span>Resized, compressed and cropped for display.</span>
+        </div>
+      </figcaption>
+    </figure>
   );
 }
 
 export function Journey() {
   const root = useRef<HTMLDivElement>(null);
   const motionState = useRef<JourneyMotion>({ progress: 0, x: 0, y: 0 });
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   const [near, setNear] = useState(false);
   useEffect(() => {
     const el = root.current;
@@ -161,37 +209,160 @@ export function Journey() {
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
+    motionState.current.progress = 0;
+    const element = root.current;
+    if (!element) return;
+    const earth = element.querySelector<HTMLElement>("[data-earth]");
+    const map = element.querySelector<HTMLElement>("[data-map]");
+    const city = element.querySelector<HTMLElement>("[data-city]");
+    const arrivalRing = element.querySelector<SVGCircleElement>("[data-map] [data-arrival-ring]");
+    if (earth) earth.inert = false;
     if (reduced) return;
     gsap.registerPlugin(ScrollTrigger);
     const ctx = gsap.context(() => {
-      const timeline = gsap.timeline({
+      // One renderer owns all scene visibility. Independent opacity tweens
+      // previously restored the map underneath the globe on reverse scroll.
+      const scene = { origin: 0, arrival: 0 };
+      const clamp = (value: number) => Math.max(0, Math.min(1, value));
+      const blend = (value: number) => { const p = clamp(value); return p * p * (3 - 2 * p); };
+      const renderScene = () => {
+        const departure = blend((scene.origin - .5) / .2);
+        const mapReveal = blend((scene.origin - .71) / .27);
+        const arrival = scene.arrival;
+        const earthOpacity = 1 - departure;
+        const mapOpacity = mapReveal * (1 - blend(arrival / .7));
+        const cityOpacity = blend((arrival - .12) / .88);
+        motionState.current.progress = scene.origin * .55;
+        if (earth) {
+          earth.style.opacity = String(earthOpacity);
+          earth.style.visibility = earthOpacity < .001 ? "hidden" : "visible";
+          earth.style.transform = `scale(${1 + departure * .12})`;
+          earth.inert = scene.origin > .5;
+          earth.setAttribute("aria-hidden", String(scene.origin > .5));
+        }
+        if (map) {
+          map.style.opacity = String(mapOpacity);
+          map.style.visibility = mapOpacity < .001 ? "hidden" : "visible";
+          map.style.transform = `scale(${.92 + mapReveal * .08 + arrival * .16})`;
+        }
+        if (city) {
+          city.style.opacity = String(cityOpacity);
+          city.style.visibility = cityOpacity < .001 ? "hidden" : "visible";
+          city.style.transform = `translateY(${36 * (1 - arrival)}px) scale(${.97 + arrival * .03})`;
+          city.inert = cityOpacity < .5;
+          city.setAttribute("aria-hidden", String(cityOpacity < .5));
+        }
+      };
+      renderScene();
+      gsap.to(scene, { origin: 1, ease: "none", onUpdate: renderScene,
         scrollTrigger: {
-          trigger: root.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: 0.65,
-          onUpdate: (self) => {
-            motionState.current.progress = self.progress;
-          },
+          trigger: "#lavasa", start: "top top", end: "bottom top", scrub: .4,
+          onRefresh: self => { scene.origin = self.progress; renderScene(); },
         },
       });
-      timeline
-        .to("[data-earth]", { opacity: 0, scale: 1.12, duration: 0.18 }, 0.28)
-        .fromTo(
-          "[data-map]",
-          { opacity: 0, scale: 0.76 },
-          { opacity: 1, scale: 1, duration: 0.24 },
-          0.26,
-        )
-        .fromTo(
-          "[data-route]",
-          { strokeDashoffset: 1 },
-          { strokeDashoffset: 0, duration: 0.32 },
-          0.39,
-        )
-        .to("[data-map]", { xPercent: -3, scale: 1.08, duration: 0.29 }, 0.71);
+      gsap.to(scene, { arrival: 1, ease: "none", onUpdate: renderScene,
+        scrollTrigger: {
+          trigger: "#mumbai", start: "top 95%", end: "top 10%", scrub: .5,
+          onRefresh: self => { scene.arrival = self.progress; renderScene(); },
+        },
+      });
+
+      const route = element.querySelector<SVGPathElement>("[data-map] [data-route]");
+      const airplane = element.querySelector<SVGGElement>("[data-map] [data-airplane]");
+      const routes = element.querySelectorAll<SVGPathElement>("[data-map] [data-route]");
+      const rule = element.querySelector<HTMLElement>("[data-flight-rule]");
+      const percent = element.querySelector<HTMLElement>("[data-flight-percent]");
+      const status = element.querySelector<HTMLElement>("[data-flight-status]");
+      const destination = element.querySelector<HTMLElement>("[data-destination]");
+      if (route && airplane) {
+        const length = route.getTotalLength();
+        const flight = { progress: 0 };
+        const renderFlight = () => {
+          const p = flight.progress;
+          const point = route.getPointAtLength(length * p);
+          const before = route.getPointAtLength(Math.max(0, length * p - 1));
+          const after = route.getPointAtLength(Math.min(length, length * p + 1));
+          const angle = Math.atan2(after.y - before.y, after.x - before.x) * 180 / Math.PI + 90;
+          airplane.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${angle})`);
+          routes.forEach(path => { path.style.strokeDashoffset = String(1 - p); });
+          if (rule) rule.style.transform = `scaleX(${p})`;
+          if (percent) percent.textContent = `${Math.round(p * 100).toString().padStart(2, "0")}%`;
+          if (status) status.textContent = p < .02 ? "READY FOR TAKEOFF" : p > .98 ? "A NEW CHAPTER BEGINS" : "IDEAS IN TRANSIT";
+          if (destination) destination.dataset.arrived = String(p > .98);
+          if (arrivalRing) {
+            arrivalRing.setAttribute("r", String(24 + Math.max(0, p - .8) * 70));
+            arrivalRing.style.opacity = String(.4 + p * .6);
+          }
+        };
+        renderFlight();
+        gsap.to(flight, {
+          progress: 1, ease: "none", onUpdate: renderFlight,
+          scrollTrigger: {
+            trigger: "#journey", start: "top top", end: "bottom bottom", scrub: .55,
+            onRefresh: renderFlight,
+          },
+        });
+      }
+
+      root.current?.querySelectorAll<HTMLElement>(`.${styles.travelChapter}`).forEach(chapter => {
+        const heading = chapter.querySelector("h2");
+        const details = chapter.querySelectorAll(`.${styles.body}, .${styles.routeLegend}, .${styles.venue}, .${styles.flightReadout}`);
+        gsap.fromTo(heading, { y: 55, opacity: .2 }, {
+          y: 0, opacity: 1, duration: 1, ease: "power3.out",
+          scrollTrigger: { trigger: chapter, start: "top 75%", end: "top 25%", scrub: .5 },
+        });
+        gsap.fromTo(details, { y: 30, opacity: .35 }, {
+          y: 0, opacity: 1, duration: .85, stagger: .1, ease: "power3.out",
+          scrollTrigger: { trigger: chapter, start: "top 65%", end: "top 20%", scrub: .5 },
+        });
+        const photograph = chapter.querySelector(`.${styles.lavasaPhoto}`);
+        if (photograph) gsap.fromTo(photograph, { y: 35, rotate: -3 }, {
+          y: -10, rotate: 0, ease: "none",
+          scrollTrigger: { trigger: photograph, start: "top bottom", end: "bottom 25%", scrub: .8 },
+        });
+      });
     }, root);
-    return () => ctx.revert();
+    let refreshFrame = 0;
+    let disposed = false;
+    const refresh = () => {
+      cancelAnimationFrame(refreshFrame);
+      refreshFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
+    };
+    const resize = new ResizeObserver(refresh);
+    resize.observe(element);
+    void document.fonts.ready.then(() => { if (!disposed) refresh(); });
+    return () => {
+      disposed = true;
+      resize.disconnect();
+      cancelAnimationFrame(refreshFrame);
+      ctx.revert();
+      for (const layer of [earth, map, city]) {
+        if (!layer) continue;
+        layer.style.removeProperty("opacity");
+        layer.style.removeProperty("visibility");
+        layer.style.removeProperty("transform");
+        layer.inert = false;
+      }
+      earth?.removeAttribute("aria-hidden");
+      city?.removeAttribute("aria-hidden");
+      // Staggered fromTo tweens can restore their initial pose on revert.
+      // Clear those local reveal styles so a live preference change leaves
+      // every paragraph and action fully visible.
+      gsap.set(element.querySelectorAll(
+        `.${styles.travelChapter} h2, .${styles.travelChapter} .${styles.body}, .${styles.routeLegend}, .${styles.venue}, .${styles.flightReadout}, .${styles.lavasaPhoto}`,
+      ), { clearProps: "opacity,transform" });
+      element.querySelectorAll<SVGPathElement>("[data-route]").forEach(path => path.style.removeProperty("stroke-dashoffset"));
+      element.querySelectorAll<SVGGElement>("[data-airplane]").forEach(plane => plane.setAttribute("transform", "translate(294 278) rotate(-97)"));
+      const rule = element.querySelector<HTMLElement>("[data-flight-rule]");
+      if (rule) rule.style.transform = "scaleX(1)";
+      const percent = element.querySelector<HTMLElement>("[data-flight-percent]");
+      if (percent) percent.textContent = "100%";
+      const status = element.querySelector<HTMLElement>("[data-flight-status]");
+      if (status) status.textContent = "LAVASA → MUMBAI";
+      element.querySelector("[data-destination]")?.removeAttribute("data-arrived");
+      if (arrivalRing) { arrivalRing.setAttribute("r", "24"); arrivalRing.style.removeProperty("opacity"); }
+      if (earth) earth.inert = false;
+    };
   }, [reduced]);
   return (
     <div
@@ -218,21 +389,19 @@ export function Journey() {
         e.currentTarget.style.setProperty("--map-y", "0px");
       }}
     >
-      <div className={styles.scene} aria-hidden="true">
+      <div className={styles.scene}>
         <div className={styles.sceneGrid} />
         <div className={styles.earth} data-earth>
           <div className={styles.globeFallback} />
-          {near && !reduced && <Globe motion={motionState} />}
-          <span className={styles.orbitLabel}>
-            18.4° N / 73.5° E <i /> WHERE IT BEGAN
-          </span>
+          {near && <Globe motion={motionState} />}
         </div>
-        <div className={styles.regionalMap} data-map>
+        <div className={styles.regionalMap} data-map aria-hidden="true">
           <RegionalMap />
           <span className={styles.mapNote}>
             A SYMBOLIC JOURNEY · NOT A NAVIGATION MAP
           </span>
         </div>
+        <MumbaiSetting />
         <div className={styles.sceneShade} />
       </div>
       <section
@@ -273,35 +442,40 @@ export function Journey() {
       </section>
       <section
         id="journey"
-        className={styles.travelChapter}
+        className={`${styles.travelChapter} ${styles.flightChapter}`}
         aria-labelledby="journey-title"
       >
-        <div className={styles.chapterCopy}>
-          <p className={styles.eyebrow}>02 / A NEW DIRECTION</p>
-          <h2 id="journey-title">
-            Ideas travel.
-            <br />
-            So <em>do we.</em>
-          </h2>
-          <p className={styles.body}>
-            From the Sahyadri hills to the pulse of Mumbai. Taking the spirit of
-            Lavasa to a wider world of people, possibilities and perspectives.
-          </p>
-          <div className={styles.routeLegend}>
-            <span>
-              LV<span>Lavasa</span>
-            </span>
-            <i />
-            <span>
-              BOM<span>Mumbai</span>
-            </span>
+        <div className={styles.flightStage}>
+          <div className={styles.staticMap}><RegionalMap completed /></div>
+          <div className={styles.chapterCopy}>
+            <p className={styles.eyebrow}><span className={styles.departureDot} />02 / A NEW DIRECTION</p>
+            <h2 id="journey-title">
+              Ideas travel.
+              <br />
+              So <em>do we.</em>
+            </h2>
+            <p className={styles.body}>
+              From the Sahyadri hills to the pulse of Mumbai. Taking the spirit of
+              Lavasa to a wider world of people, possibilities and perspectives.
+            </p>
+            <div className={styles.routeLegend}>
+              <span>
+                LV<span>Lavasa</span>
+              </span>
+              <i />
+              <span data-destination>
+                BOM<span>Mumbai</span>
+              </span>
+            </div>
+            <div className={styles.flightReadout} aria-hidden="true">
+              <div><span data-flight-status>READY FOR TAKEOFF</span><span data-flight-percent>00%</span></div>
+              <div className={styles.flightRule}><i data-flight-rule /></div>
+              <p>One shared purpose. A whole new horizon.</p>
+            </div>
+            <a className={styles.textLink} href="#mumbai">
+              Meet our next destination <span>↓</span>
+            </a>
           </div>
-          <p className={styles.small}>
-            One shared purpose. A whole new horizon.
-          </p>
-          <a className={styles.textLink} href="#mumbai">
-            Meet our next destination <span>↓</span>
-          </a>
         </div>
       </section>
       <section
@@ -309,6 +483,7 @@ export function Journey() {
         className={`${styles.travelChapter} ${styles.arrival}`}
         aria-labelledby="mumbai-title"
       >
+        <div className={styles.staticCity}><MumbaiSetting staticView /></div>
         <div className={styles.chapterCopy}>
           <p className={styles.eyebrow}>03 / THE NEXT DESTINATION</p>
           <h2 id="mumbai-title">
@@ -389,7 +564,7 @@ const editions = [
 export function EditionJourney() {
   const root = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {

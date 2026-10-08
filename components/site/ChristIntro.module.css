@@ -1,0 +1,28 @@
+.intro { position:fixed; inset:0; z-index:100; display:grid; place-items:center; color:#edf2ff; isolation:isolate; animation:failOpen .5s 6s forwards; }
+.shutters { position:absolute; inset:0; z-index:-1; display:flex; overflow:hidden; }
+.shutters > div { flex:1; background:#060c17; background-image:radial-gradient(ellipse at 50% 55%,#172b4940,transparent 65%); border-right:1px solid #a3c9ff05; transform-origin:center top; }
+.shutters > div:nth-child(even) { transform-origin:center bottom; }
+.topline,.bottomline { position:absolute; left:5vw; right:5vw; display:flex; align-items:center; justify-content:space-between; gap:20px; font-size:9px; letter-spacing:.17em; color:#9bacc6; }
+.topline { top:32px; }.bottomline { bottom:24px; }
+.brand { position:relative; text-align:center; width:min(80vw,850px); }
+.christ { display:block; width:210px; height:72px; object-fit:contain; margin:0 auto 42px; filter:grayscale(1) invert(1) brightness(1.8); mix-blend-mode:screen; opacity:.8; }
+.wordmark { display:flex; justify-content:center; align-items:flex-start; gap:12px; font:500 clamp(60px,10.5vw,150px)/.87 var(--font-display),sans-serif; letter-spacing:-.065em; }
+.wordmark em { font-style:normal; font-size:.25em; letter-spacing:-.04em; color:#a4c2f4; padding-top:4px; }
+.brand > p { font:400 clamp(12px,1.3vw,18px)/1.6 var(--font-body),sans-serif; margin:30px 0 38px; color:#b4c0d2; }
+.progress { width:180px; height:1px; background:#293449; margin:0 auto; overflow:hidden; }
+.progress > span { display:block; width:100%; height:100%; background:#b4ceff; transform-origin:left; transition:transform .4s ease-out; }
+.status { display:block; font-size:8px; letter-spacing:.23em; color:#91a6c5; margin-top:16px; }
+.bottomline button { min-height:44px; cursor:pointer; color:#dae5f9; font-size:11px; letter-spacing:0; display:flex; align-items:center; gap:28px; }
+.bottomline button span { font-size:20px; transition:transform .2s ease-out; }.bottomline button:hover span { transform:translate(3px,-3px); }.bottomline button:focus-visible { outline:2px solid #a4c2f4; outline-offset:8px; }
+.intro[data-phase=opening] { pointer-events:none; animation:none; }
+.intro[data-phase=opening] .shutters > div { animation:openShutter 1.08s cubic-bezier(.76,0,.24,1) calc(.12s + var(--strip) * .022s) both; }
+.intro[data-phase=opening] .shutters > div:nth-child(even) { animation-name:openShutterDown; }
+.intro[data-phase=opening] .brand { animation:brandExit .46s cubic-bezier(.2,.7,.2,1) both; }
+.intro[data-phase=opening] :is(.topline,.bottomline) { animation:metaExit .3s ease-out both; }
+@keyframes openShutter { to { transform:translateY(-101%); } }
+@keyframes openShutterDown { to { transform:translateY(101%); } }
+@keyframes brandExit { to { opacity:0; transform:translateY(-18px); filter:blur(4px); } }
+@keyframes metaExit { to { opacity:0; } }
+@keyframes failOpen { to { opacity:0; visibility:hidden; pointer-events:none; } }
+@media(max-width:700px) { .wordmark { font-size:clamp(56px,14vw,90px); gap:7px; }.christ { width:180px; height:62px; margin-bottom:38px; }.brand > p { margin:24px 0 30px; }.topline,.bottomline { left:7vw; right:7vw; font-size:7px; }.bottomline > span { max-width:110px; line-height:1.8; }.bottomline button { font-size:10px; gap:16px; }.topline { top:24px; } }
+@media(prefers-reduced-motion:reduce) { .intro { display:none; } }

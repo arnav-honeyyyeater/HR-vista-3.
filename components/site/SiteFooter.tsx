@@ -43,6 +43,8 @@ export function SiteFooter() {
         <nav aria-label="More about HR Vista">
           <span>TAKE A CLOSER LOOK</span>
           <a href="/work">The edition archive ↗</a>
+          <a href="/#people">The people behind it ↗</a>
+          <a href="/sponsors">Sponsor showcase ↗</a>
           <a href="/brochure">Read the brochure ↗</a>
           <a href="/brochure/HR-VISTA-3.0.pdf" download>
             Download brochure ↓

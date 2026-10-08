@@ -60,7 +60,7 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" data-scroll-behavior="smooth" className={`${nohemi.variable} ${manrope.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning className={`${nohemi.variable} ${manrope.variable}`}>
       <body className="font-body bg-[var(--ink-900)] text-[var(--paper)] antialiased">
         <LenisProvider>
           <RevealSafety />

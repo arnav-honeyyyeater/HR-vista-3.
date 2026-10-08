@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, type CSSProperties, type ReactNode } from "react";
-import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
+import { motion, useMotionValue, useSpring } from "framer-motion";
+import { useReducedMotionPreference } from "@/lib/useReducedMotionPreference";
 
 /**
  * Tilt — mouse-following 3D card tilt with a specular shine.
@@ -21,7 +22,7 @@ export function Tilt({
   /** TranslateZ lift at the cursor, px. */
   lift?: number;
 }) {
-  const reduced = useReducedMotion();
+  const reduced = useReducedMotionPreference();
   const rx = useMotionValue(0);
   const ry = useMotionValue(0);
   const z = useMotionValue(0);
@@ -35,7 +36,7 @@ export function Tilt({
       className={className}
       style={
         reduced
-          ? undefined
+          ? ({ transform: "none", "--shine-on": 0 } as CSSProperties)
           : ({
               rotateX: smoothRx,
               rotateY: smoothRy,

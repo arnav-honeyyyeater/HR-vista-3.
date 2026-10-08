@@ -6,8 +6,7 @@
 }
 .journey :is(a, button, summary):focus-visible,
 .editions a:focus-visible,
-.finale a:focus-visible,
-.intro button:focus-visible {
+.finale a:focus-visible {
   outline: 2px solid #b7d1ff;
   outline-offset: 7px;
 }
@@ -17,7 +16,7 @@
   height: 100svh;
   margin-bottom: -100svh;
   overflow: hidden;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
 }
 .sceneGrid {
@@ -34,9 +33,9 @@
 }
 .earth {
   position: absolute;
-  width: 76%;
+  width: 67%;
   height: 100%;
-  right: -11%;
+  right: -4%;
   top: 0;
 }
 .earth :global(.journey-globe) {
@@ -100,6 +99,7 @@
   width: 68%;
   height: 86%;
   opacity: 0;
+  transform-origin: 40% 40%;
 }
 .mapDrawing {
   width: 100%;
@@ -124,6 +124,9 @@
   );
 }
 .travelChapter {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
   min-height: 110svh;
   display: flex;
   align-items: center;
@@ -131,9 +134,86 @@
   scroll-margin-top: 65px;
 }
 .chapterCopy {
+  pointer-events: auto;
   max-width: 650px;
   width: 48%;
 }
+.flightChapter {
+  display: block;
+  min-height: 185svh;
+  padding: 0;
+  scroll-margin-top: 0;
+}
+.flightStage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 700px;
+  display: flex;
+  align-items: center;
+  padding: 105px 6vw 65px;
+}
+.flightStage .chapterCopy { width: 49%; }
+.flightStage h2 { font-size: clamp(56px, 6.9vw, 112px); }
+.flightStage .body { max-width: 370px; margin-bottom: 0; }
+.departureDot {
+  width: 5px;
+  height: 5px;
+  background: #efc58a;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #efc58a60;
+}
+.flightStage .eyebrow { align-items: center; gap: 12px; }
+.flightReadout { max-width: 335px; margin-top: 28px; }
+.flightReadout > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 9px;
+  letter-spacing: .12em;
+  color: #bed0eb;
+  font-variant-numeric: tabular-nums;
+}
+.flightRule { height: 1px; margin-top: 12px; background: #829db333; overflow: hidden; }
+.flightRule i { display: block; height: 100%; background: linear-gradient(90deg, #efc58a, #a6c5ff); transform: scaleX(0); transform-origin: left; }
+.flightReadout p { margin-top: 12px; color: #a5b2c5; font-size: 11px; }
+.routeLegend [data-arrived="true"] { color: #a6c5ff; }
+.airplane { filter: drop-shadow(0 2px 5px #030810) drop-shadow(0 0 8px #9fc3ff55); }
+.staticMap { display: none; }
+.cityScene {
+  position: absolute;
+  top: 15%;
+  right: 4%;
+  width: 50%;
+  height: 72%;
+  margin: 0;
+  background: #13253b;
+  border: 1px solid #91b1d12b;
+  overflow: hidden;
+  opacity: 0;
+}
+.cityScene::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #050b1444, transparent 35%, #050b1411 55%, #050b14e8); pointer-events: none; }
+.cityPhoto { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 56% 52%; }
+.cityTopline {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 8px;
+  letter-spacing: .14em;
+  color: #e3ecfc;
+  z-index: 1;
+}
+.cityTopline { top: 24px; }
+.cityCaption { position: absolute; z-index: 1; left: 28px; right: 28px; bottom: 24px; color: #f3f6fd; }
+.cityLocation > span { display: block; font-size: 9px; color: #e9c38a; letter-spacing: .17em; margin-bottom: 12px; }
+.cityLocation strong { font: 400 clamp(28px, 3.1vw, 48px)/1.1 var(--font-display), sans-serif; letter-spacing: -.045em; }
+.cityCredits { display: flex; flex-direction: column; gap: 4px; margin-top: 24px; font-size: 8px; color: #c1d0e5; line-height: 1.6; }
+.cityCredits a { pointer-events: auto; text-decoration: underline; text-underline-offset: 3px; }
+.cityCredits a:hover { color: #fff; }
+.staticCity { display: none; }
 .eyebrow {
   font-family: var(--font-body), sans-serif;
   font-size: 10px;
@@ -299,6 +379,10 @@
   background: #eae9e2;
   color: #142031;
   padding: 110px 6vw 20px;
+  z-index: 2;
+  margin-top: -36px;
+  border-radius: 36px 36px 0 0;
+  scroll-margin-top: var(--nav-h, 64px);
 }
 .editionsHeader {
   display: grid;
@@ -511,82 +595,6 @@
   color: #b7c8e1;
   flex-wrap: wrap;
 }
-.intro {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  background: #f3f1ea;
-  color: #142031;
-  animation: introOut 0.5s 1.3s both;
-}
-.introBrand {
-  text-align: center;
-  animation: brandIn 0.7s ease-out both;
-}
-.introBrand img {
-  width: min(340px, 75vw);
-  height: auto;
-  max-height: 155px;
-  object-fit: contain;
-  margin: 0 auto 42px;
-}
-.introBrand span {
-  display: block;
-  font-size: 9px;
-  letter-spacing: 0.35em;
-  margin-bottom: 14px;
-}
-.introBrand strong {
-  display: block;
-  font:
-    500 35px/1 var(--font-display),
-    sans-serif;
-  letter-spacing: -0.04em;
-}
-.introBrand::after {
-  content: "";
-  display: block;
-  width: 80px;
-  height: 1px;
-  margin: 35px auto 0;
-  background: #648ec8;
-  transform-origin: left;
-  animation: sweep 1.2s ease both;
-}
-.intro button {
-  position: absolute;
-  bottom: 35px;
-  right: 6vw;
-  font-size: 12px;
-  min-height: 44px;
-  cursor: pointer;
-}
-@keyframes introOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-@keyframes brandIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-@keyframes sweep {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
 @media (min-width: 1700px) {
   .chapterCopy {
     margin-left: max(0px, calc((100vw - 1700px) / 2));
@@ -599,6 +607,11 @@
   .chapterCopy h2 {
     font-size: 65px;
   }
+  .flightStage h2 { font-size: clamp(54px, 7.2vw, 72px); }
+  .cityScene { right: 3%; width: 49%; }
+  .arrival .chapterCopy { width: 44%; }
+  .cityTopline { left: 18px; right: 18px; font-size: 7px; }
+  .cityCaption { left: 20px; right: 20px; }
   .editionNav a > span:last-child {
     display: none;
   }
@@ -616,6 +629,7 @@
     width: 100%;
     max-width: 480px;
   }
+  .arrival .chapterCopy { width: 100%; }
   .chapterCopy h2 {
     font-size: clamp(48px, 12vw, 74px);
     max-width: 95%;
@@ -629,16 +643,17 @@
     max-width: 330px;
   }
   .earth {
-    width: 115%;
-    right: -30%;
-    top: -26%;
-    height: 92%;
+    width: 100%;
+    right: 0;
+    top: 65px;
+    height: 49svh;
   }
+  .travelChapter:first-of-type { padding-top: 65svh; }
   .orbitLabel {
     display: none;
   }
   .sceneShade {
-    background: linear-gradient(0deg, #050b14 8%, #050b14eb 43%, #050b1410 90%);
+    background: linear-gradient(0deg, #050b14 8%, #050b14bb 30%, transparent 60%);
   }
   .lavasaPhoto {
     width: 200px;
@@ -651,11 +666,35 @@
     display: none;
   }
   .regionalMap {
-    width: 105%;
-    height: 76%;
-    top: -9%;
-    right: -5%;
+    width: 130%;
+    height: 53%;
+    top: 7%;
+    right: -15%;
   }
+  .airplane { transform: scale(1.25); }
+  .flightChapter { min-height: 180svh; padding: 0; }
+  .flightStage {
+    padding: 43svh 7vw 34px;
+    align-items: flex-end;
+    min-height: 760px;
+  }
+  .flightStage .chapterCopy { width: 100%; }
+  .flightStage h2 { font-size: clamp(45px, 12.8vw, 74px); margin-bottom: 20px; }
+  .flightStage .body { font-size: 13px; line-height: 1.75; max-width: 340px; }
+  .flightStage .eyebrow { margin-bottom: 18px; }
+  .flightStage .routeLegend { max-width: 290px; margin: 24px 0 0; }
+  .flightStage .routeLegend > span { font-size: 34px; }
+  .flightStage .routeLegend span span { font-size: 8px; margin-top: 8px; }
+  .flightReadout { margin-top: 22px; max-width: 290px; }
+  .flightReadout > div:first-child { font-size: 8px; }
+  .flightReadout p { font-size: 10px; margin-top: 10px; }
+  .flightStage .textLink { margin-top: 14px; font-size: 11px; }
+  .cityScene { top: 9%; right: 7%; width: 86%; height: 36%; }
+  .cityTopline { top: 14px; left: 14px; right: 14px; font-size: 7px; }
+  .cityCaption { left: 16px; right: 16px; bottom: 14px; }
+  .cityLocation > span { font-size: 7px; margin-bottom: 8px; }
+  .cityLocation strong { font-size: 25px; }
+  .cityCredits { font-size: 7px; margin-top: 12px; }
   .mapNote {
     display: none;
   }
@@ -667,6 +706,8 @@
   }
   .editions {
     padding: 75px 7vw 15px;
+    margin-top: -24px;
+    border-radius: 24px 24px 0 0;
   }
   .editionsHeader {
     display: block;
@@ -730,15 +771,22 @@
     margin: 0;
   }
   .earth {
-    display: none;
+    display: block;
+    height: 80svh;
   }
   .regionalMap {
-    opacity: 0.45;
-    position: sticky;
-    top: 0;
-    height: 100svh;
-    margin-left: auto;
+    display: none;
   }
+  .scene .cityScene { display: none; }
+  .staticCity { display: block; position: absolute; top: 18%; right: 6%; width: 46%; height: 64%; }
+  .staticCity .cityScene { position: relative; inset: auto; width: 100%; height: 100%; opacity: 1; }
+  .flightChapter { min-height: 100svh; }
+  .flightStage { position: relative; height: auto; min-height: 100svh; }
+  .staticMap { display: block; position: absolute; top: 10%; right: 0; width: 65%; height: 80%; pointer-events: none; opacity: .8; }
+  .staticMap + .chapterCopy { position: relative; }
+  .flightReadout > div:first-child { display: none; }
+  .flightRule i { transform: none; }
+  .chapterCopy :is(h2, .body, .routeLegend, .venue, .flightReadout), .lavasaPhoto { opacity: 1 !important; transform: none !important; }
   .sceneShade {
     background: linear-gradient(90deg, #050b14 4%, #050b14df 40%, #050b1440);
   }
@@ -748,15 +796,30 @@
   .editionNav {
     position: static;
   }
-  .intro {
-    display: none;
-  }
   .journey *,
   .editions *,
   .finale * {
     animation: none !important;
     transition: none !important;
   }
+}
+@media (prefers-reduced-motion: reduce) and (max-width:700px) {
+  .earth { height:49svh; }
+  .flightStage { display: flex; flex-direction: column; align-items: stretch; padding-top: 60px; gap: 12px; }
+  .staticMap { position: relative; top: auto; right: auto; width: 100%; height: 260px; }
+  .arrival { flex-direction: column; align-items: stretch; gap: 32px; padding-top: 70px; }
+  .staticCity { position: relative; inset: auto; width: 100%; height: 290px; }
+  .sceneShade { background: linear-gradient(0deg, #050b14 8%, #050b14bb 30%, transparent 60%); }
+}
+@media (max-height: 740px) and (min-width: 701px) {
+  .flightStage { min-height: 600px; padding-block: 88px 35px; }
+  .flightStage h2 { font-size: clamp(52px, 6vw, 88px); margin-bottom: 20px; }
+  .flightStage .routeLegend { margin-top: 26px; margin-bottom: 18px; }
+  .flightReadout { margin-top: 20px; }
+}
+@media (max-height: 760px) and (max-width: 700px) and (prefers-reduced-motion: no-preference) {
+  .flightChapter { min-height: 0; }
+  .flightStage { position: relative; height: auto; min-height: 0; padding-top: 48svh; padding-bottom: 50px; }
 }
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
   .mapDrawing {

@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useRef, type MutableRefObject } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type MutableRefObject } from "react";
 import * as THREE from "three";
+import styles from "./GlobeControls.module.css";
 
 export type JourneyMotion = { progress: number; x: number; y: number };
 type Geography = {
@@ -10,13 +11,50 @@ type Geography = {
   }[];
 };
 
-/** Decorative renderer only: all geographic labels and story content live in HTML. */
+/** Spin the earth normally; quick direction changes reveal a temporary Easter egg. */
 export default function JourneyGlobe({
   motion,
 }: {
   motion: MutableRefObject<JourneyMotion>;
 }) {
   const host = useRef<HTMLDivElement>(null);
+  const shell = useRef<HTMLDivElement>(null);
+  const spin = useRef({ angle: 0, target: 0, velocity: 0, dragging: false, x: 0, time: 0,
+    direction: 0, leg: 0, turns: 0, travel: 0, shakeAt: 0 });
+  const [discovery, setDiscovery] = useState(0);
+  const [revealing, setRevealing] = useState(false);
+  const [paused, setPaused] = useState(false);
+  const pauseRef = useRef(false);
+  const reducedRef = useRef(false);
+  const revealAt = useRef(-10000);
+  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reset = () => {
+    spin.current.velocity = 0;
+    spin.current.target = Math.round(spin.current.angle / (Math.PI * 2)) * Math.PI * 2;
+    if (reducedRef.current) spin.current.angle = spin.current.target;
+  };
+  const discover = () => {
+    const now = performance.now();
+    if (now - revealAt.current < 4000) return;
+    revealAt.current = now;
+    spin.current.velocity = 0;
+    spin.current.turns = 0;
+    setDiscovery(value => value + 1);
+    setRevealing(true);
+    if (revealTimer.current) clearTimeout(revealTimer.current);
+    revealTimer.current = setTimeout(() => setRevealing(false), reducedRef.current ? 5000 : 3800);
+  };
+
+  useEffect(() => {
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => { reducedRef.current = preference.matches; };
+    update();
+    preference.addEventListener("change", update);
+    return () => {
+      preference.removeEventListener("change", update);
+      if (revealTimer.current) clearTimeout(revealTimer.current);
+    };
+  }, []);
   useEffect(() => {
     const element = host.current;
     if (!element) return;
@@ -142,11 +180,26 @@ export default function JourneyGlobe({
       renderer.setAnimationLoop(null);
       element.dataset.failed = "true";
     };
+    const onRestore = () => { contextLost = false; element.dataset.failed = "false"; updateLoop(); };
     renderer.domElement.addEventListener("webglcontextlost", onLoss);
-    const render = () => {
+    renderer.domElement.addEventListener("webglcontextrestored", onRestore);
+    let lastTime = 0;
+    const render = (time: number) => {
       if (!visible || document.hidden || disposed || contextLost) return;
       const p = motion.current.progress;
-      if (p > 0.5) return; // The regional map has replaced the globe; stop GPU work.
+      if (shell.current) shell.current.inert = !reducedRef.current && p > 0.27;
+      if (p > 0.5 && !reducedRef.current) return;
+      const dt = Math.min((time - lastTime) / 16.67 || 1, 3);
+      lastTime = time;
+      const state = spin.current;
+      if (!state.dragging && !pauseRef.current) {
+        state.target += state.velocity * dt;
+        state.velocity *= Math.pow(0.94, dt);
+      }
+      state.angle += (state.target - state.angle) * (reducedRef.current ? 1 : 1 - Math.pow(0.86, dt));
+      globe.rotation.y = state.angle;
+      const elapsed = time - revealAt.current;
+      globe.rotation.z = reducedRef.current ? 0 : Math.sin(elapsed / 43) * Math.exp(-elapsed / 220) * .055;
       const zoom = THREE.MathUtils.smoothstep(p, 0.06, 0.43);
       // Fit the whole sphere before zooming, including tall tablet canvases.
       const horizontalHalfFov = Math.atan(
@@ -161,6 +214,8 @@ export default function JourneyGlobe({
         ),
       );
       camera.lookAt(0, 0, 0);
+      camera.updateMatrixWorld();
+      globe.updateMatrixWorld();
       renderer.render(scene, camera);
     };
     const updateLoop = () =>
@@ -178,6 +233,7 @@ export default function JourneyGlobe({
       intersection.disconnect();
       document.removeEventListener("visibilitychange", updateLoop);
       renderer.domElement.removeEventListener("webglcontextlost", onLoss);
+      renderer.domElement.removeEventListener("webglcontextrestored", onRestore);
       renderer.setAnimationLoop(null);
       renderer.dispose();
       renderer.domElement.remove();
@@ -194,5 +250,79 @@ export default function JourneyGlobe({
       texture?.dispose();
     };
   }, [motion]);
-  return <div ref={host} className="journey-globe" aria-hidden="true" />;
+  return (
+    <div ref={shell} className={styles.shell} data-globe-interactive data-discovering={revealing}>
+      <div className={styles.dragSurface} tabIndex={0} role="group" aria-label="Interactive earth. Drag or use arrow keys to spin. Shake back and forth to find a surprise, or press Space. Home resets the globe."
+        onKeyDown={(event) => {
+          if (!["ArrowLeft", "ArrowRight", "Home", " ", "Enter"].includes(event.key)) return;
+          event.preventDefault();
+          if (event.key === " " || event.key === "Enter") { discover(); return; }
+          spin.current.velocity = 0;
+          if (event.key === "Home") reset();
+          else spin.current.target += event.key === "ArrowRight" ? Math.PI / 6 : -Math.PI / 6;
+        }}
+        onPointerDown={(event) => {
+          if (event.button !== 0 || !event.isPrimary) return;
+          event.currentTarget.setPointerCapture(event.pointerId);
+          spin.current.dragging = true; spin.current.x = event.clientX; spin.current.time = event.timeStamp; spin.current.velocity = 0;
+          spin.current.direction = 0; spin.current.leg = 0; spin.current.turns = 0; spin.current.travel = 0; spin.current.shakeAt = event.timeStamp;
+        }}
+        onPointerMove={(event) => {
+          const state = spin.current;
+          if (!state.dragging) return;
+          const dx = event.clientX - state.x;
+          const delta = dx * .009;
+          const elapsed = Math.max(event.timeStamp - state.time, 8);
+          if (event.timeStamp - state.shakeAt > 1100) {
+            state.turns = 0; state.travel = 0; state.leg = 0; state.direction = 0; state.shakeAt = event.timeStamp;
+          }
+          if (Math.abs(dx) > 1) {
+            const direction = Math.sign(dx);
+            if (state.direction && direction !== state.direction) {
+              if (state.leg >= 22) state.turns++;
+              state.leg = 0;
+            }
+            state.direction = direction;
+            state.leg += Math.abs(dx);
+            state.travel += Math.abs(dx);
+            if (state.turns >= 3 && state.travel >= 140) discover();
+          }
+          state.target += delta;
+          state.velocity = reducedRef.current || pauseRef.current ? 0 : THREE.MathUtils.clamp(delta * 16.67 / elapsed, -.12, .12);
+          state.x = event.clientX; state.time = event.timeStamp;
+        }}
+        onPointerUp={(event) => {
+          spin.current.dragging = false;
+          if (event.timeStamp - spin.current.time > 100) spin.current.velocity = 0;
+          if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+        }}
+        onPointerCancel={() => { spin.current.dragging = false; spin.current.velocity = 0; }}
+        onLostPointerCapture={() => { spin.current.dragging = false; }}>
+        <div ref={host} className="journey-globe" aria-hidden="true" />
+        {revealing && <div key={discovery} className={styles.discovery} aria-hidden="true" data-globe-egg>
+          <div className={styles.shockwave} />
+          {["HR VISTA", "CHRIST"].map((name, i) => <div key={name} className={styles.eggBadge} data-brand={name} style={{ "--brand": i, "--tilt": i ? "7deg" : "-9deg", "--drift": i ? "1" : "-1" } as CSSProperties}>
+            <div className={styles.eggBacking} />
+            <div className={styles.logo}>
+              {Array.from({ length: 12 }, (_, slice) => <span key={slice} className={styles.logoSlice} style={{ "--slice": slice, clipPath: `inset(${slice * 100 / 12}% 0 ${100 - (slice + 1) * 100 / 12}% 0)` } as CSSProperties}>
+                <img src={i === 0 ? "/media/raw/logo_hr_vista.png" : "/media/raw/logo_christ_lavasa.png"} alt="" width={220} height={120} draggable={false} />
+              </span>)}
+            </div>
+            <span className={styles.eggLabel}>{i === 0 ? "A WORLD OF POSSIBILITIES" : "WHERE OUR STORY BEGINS"}</span>
+            {Array.from({ length: 6 }, (_, particle) => <i key={particle} className={styles.spark} style={{ "--particle": particle } as CSSProperties} />)}
+          </div>)}
+          <span className={styles.found}>TWO IDENTITIES. ONE WORLD. <i>✳</i></span>
+        </div>}
+      </div>
+      <div className={styles.controls}>
+        <p>DRAG TO EXPLORE <span>·</span> A LITTLE SHAKE. A LITTLE SURPRISE.</p>
+        <div className={styles.buttons}>
+          <button type="button" onClick={discover} aria-label="Shake the globe to reveal the Easter egg">Give it a shake <span>↔</span></button>
+          <button type="button" onClick={reset} aria-label="Reset globe rotation">Reset <span>↺</span></button>
+          <button type="button" aria-pressed={paused} aria-label={paused ? "Enable globe momentum" : "Pause globe momentum"} onClick={() => { pauseRef.current = !paused; spin.current.velocity = 0; setPaused(!paused); }}>{paused ? "▶" : "Ⅱ"}</button>
+        </div>
+        <span className={styles.srOnly} role="status">{revealing ? "You found the Easter egg: HR VISTA and CHRIST University. Two identities, one world." : discovery ? "Easter egg discovered. Shake the globe to see it again." : ""}</span>
+      </div>
+    </div>
+  );
 }

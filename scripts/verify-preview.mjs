@@ -5,7 +5,7 @@ import { createHash } from "node:crypto";
 // Verify a running preview, including bundles needed for navigation.
 const origin = process.argv[2] ?? "http://127.0.0.1:3005";
 const scripts = new Set();
-for (const route of ["/", "/work", "/brochure?page=11"]) {
+for (const route of ["/", "/work", "/brochure?page=11", "/sponsors"]) {
   const response = await fetch(new URL(route, origin));
   assert.equal(response.status, 200, `${route} must load`);
   const html = await response.text();

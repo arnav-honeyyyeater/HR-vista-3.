@@ -7,8 +7,9 @@ import styles from "./SiteHeader.module.css";
 
 const LINKS = [
   { label: "Our journey", href: "/#lavasa" },
-  { label: "Mumbai", href: "/#mumbai" },
   { label: "Editions", href: "/#editions" },
+  { label: "People", href: "/#people" },
+  { label: "Sponsors", href: "/sponsors" },
   { label: "Brochure", href: "/brochure" },
 ];
 

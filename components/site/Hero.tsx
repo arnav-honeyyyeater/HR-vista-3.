@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, type CSSProperties } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import styles from "./Hero.module.css";
 
 /**
@@ -133,6 +135,22 @@ export function Hero() {
   const panelRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const media = gsap.matchMedia();
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      const hero = stageRef.current?.closest<HTMLElement>("[data-hero]");
+      if (!hero) return;
+      const timeline = gsap.timeline({ scrollTrigger: {
+        trigger: hero, start: "top top", end: "bottom top", scrub: .6,
+      } });
+      timeline.to(stageRef.current, { yPercent: 18, scale: .94, opacity: .25, ease: "none" }, 0)
+        .to(hero.querySelector("[data-hero-copy]"), { y: 70, opacity: .15, ease: "none" }, 0)
+        .to(hero.querySelector("[data-hero-floor]"), { yPercent: -10, opacity: .08, ease: "none" }, 0);
+    });
+    return () => media.revert();
+  }, []);
+
+  useEffect(() => {
     const stage = stageRef.current;
     const drum = drumRef.current;
     if (!stage || !drum) return;
@@ -186,18 +204,35 @@ export function Hero() {
     };
     draw();
 
-    // Reduced motion: the opening pose is the whole hero. No stepping, no drag.
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      stage.dataset.static = "true";
-      return;
-    }
+    const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let reduced = preference.matches;
+    const updatePreference = () => {
+      reduced = preference.matches;
+      stage.dataset.static = String(reduced);
+      if (reduced) {
+        dragging = false;
+        vel = 0;
+        target = Math.round(target / STEP) * STEP;
+        angle = target;
+        stage.classList.remove(styles["is-dragging"]!);
+        draw();
+      }
+      resumeAt = performance.now() + DWELL_MS;
+    };
+    updatePreference();
+    preference.addEventListener("change", updatePreference);
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       if (!last) last = now;
       const dt = Math.min((now - last) / 1000, MAX_DT);
       last = now;
-      if (!visible) return;
+      if (!visible || reduced) return;
+      const intro = document.documentElement.dataset.intro;
+      if (intro === "loading" || intro === "opening") {
+        resumeAt = now + DWELL_MS;
+        return;
+      }
 
       // Advance one framing at a time. `target` only ever holds multiples of
       // STEP, so the drum is never parked between two framings. The first
@@ -230,6 +265,7 @@ export function Hero() {
     const onLeave = () => { hover = false; };
 
     const onDown = (e: PointerEvent) => {
+      if (reduced || !e.isPrimary) return;
       if (e.pointerType === "mouse" && e.button !== 0) return;
       dragging = true;
       startX = e.clientX;
@@ -274,6 +310,7 @@ export function Hero() {
       // Nudge the TARGET, so the arrow keys ride the same spring as the drag
       // instead of snapping the drum to a fixed angle.
       target += e.key === "ArrowRight" ? -STEP : STEP;
+      if (reduced) { angle = target; draw(); }
       resumeAt = performance.now() + RESUME_MS;
     };
 
@@ -290,6 +327,7 @@ export function Hero() {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      preference.removeEventListener("change", updatePreference);
       stage.removeEventListener("pointerenter", onEnter);
       stage.removeEventListener("pointerleave", onLeave);
       stage.removeEventListener("pointerdown", onDown);
@@ -302,11 +340,11 @@ export function Hero() {
   }, []);
 
   return (
-    <section className={styles.hero} aria-labelledby="hero-title">
+    <section className={styles.hero} aria-labelledby="hero-title" data-hero>
       {/* The retro perspective floor. The reference draws this as a 3016×1075
           PNG bleeding 120px past each edge at 32% opacity; ours is the same
           plate. It sits behind the drum so the drum's base cuts into it. */}
-      <div className={styles.floor} aria-hidden>
+      <div className={styles.floor} aria-hidden data-hero-floor>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/media/ref/ref-hero-banner.png" alt="" draggable={false} />
       </div>
@@ -314,13 +352,14 @@ export function Hero() {
       <div
         ref={stageRef}
         className={styles.stage}
-        role="img"
+        data-hero-drag
+        role="group"
         tabIndex={0}
         aria-label="HR VISTA 3.0 — two editions of the conclave, on a drum. Drag to turn it."
       >
         {/* The 300×420 window the drum is projected through. Its size and the
             radius are set per breakpoint in Hero.module.css. */}
-        <div className={styles.viewport}>
+        <div className={styles.viewport} data-wall-enter>
           <div ref={drumRef} className={styles.drum} style={{ transform: `rotateY(${START}deg)` }}>
             {PANELS.map((panel, k) => (
               <div
@@ -329,6 +368,7 @@ export function Hero() {
                   panelRefs.current[k] = el;
                 }}
                 className={styles.panel}
+                data-hero-panel
                 style={
                   {
                     "--ry": `${-k * STEP}deg`,
@@ -345,7 +385,10 @@ export function Hero() {
                     src={panel.src}
                     alt=""
                     draggable={false}
-                    loading={k < 2 ? "eager" : "lazy"}
+                    loading={facesViewer(k, START) ? "eager" : "lazy"}
+                    fetchPriority={k === 6 ? "high" : "auto"}
+                    width={300}
+                    height={420}
                     decoding="async"
                     style={{ objectPosition: panel.pos }}
                   />
@@ -357,12 +400,12 @@ export function Hero() {
       </div>
 
       {/* Copy — the reference's eyebrow over a two-line display headline. */}
-      <div className={styles.copy}>
+      <div className={styles.copy} data-hero-copy>
         <p className={styles.caption}>HR VISTA 3.0 · 21–22 NOV 2026 · BKC, MUMBAI</p>
         <h1 id="hero-title" className={styles.title}>
-          The Future of Work.
+          <span className={styles.titleLine}><span>The Future of Work.</span></span>
           <br />
-          The People Who Shape It.
+          <span className={styles.titleLine}><span>The People Who Shape It.</span></span>
         </h1>
       </div>
 
@@ -370,6 +413,7 @@ export function Hero() {
         <span>DRAG THE WALL</span>
         <span className={styles["cue-line"]} />
       </div>
+      <a href="#lavasa" className={styles.storyLink}>Explore the journey <span aria-hidden="true">↓</span></a>
     </section>
   );
 }

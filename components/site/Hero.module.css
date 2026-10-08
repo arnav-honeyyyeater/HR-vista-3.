@@ -196,7 +196,6 @@
   line-height: 3.7;
   letter-spacing: -0.01em;
   color: var(--paper);
-  animation: hero-fade 0.5s var(--ease-spring) 0.08s both;
 }
 
 /* The reference's headline: 80px, weight 500, line-height 1, two lines, white,
@@ -210,9 +209,25 @@
   line-height: 1;
   letter-spacing: -0.025em;
   color: var(--paper);
-  /* The reference drops its headline in from 150px above on a bouncy spring. */
-  animation: hero-drop 0.85s var(--ease-spring) 0.2s both;
 }
+
+.titleLine { display:inline-block; overflow:hidden; padding-bottom:.08em; margin-bottom:-.08em; vertical-align:bottom; }
+.titleLine > span { display:block; }
+:global(html[data-intro="loading"]) .viewport { transform:translateY(28px); }
+:global(html[data-intro="loading"]) :is(.caption,.cue) { opacity:0; }
+:global(html[data-intro="loading"]) .titleLine > span { transform:translateY(115%); }
+:global(html[data-intro="loading"]) :is(.breathe,.breathe img,.cue-line),
+:global(html[data-intro="opening"]) :is(.breathe,.breathe img,.cue-line) { animation-play-state:paused; }
+:global(html[data-intro="opening"]) .viewport { animation:wallEnter 1s cubic-bezier(.16,1,.3,1) both; }
+:global(html[data-intro="opening"]) .caption { animation:hero-fade .65s ease-out .26s both; }
+:global(html[data-intro="opening"]) .titleLine > span { animation:lineEnter .82s cubic-bezier(.16,1,.3,1) .32s both; }
+:global(html[data-intro="opening"]) .titleLine:last-child > span { animation-delay:.43s; }
+:global(html[data-intro="opening"]) .cue { animation:cueEnter .6s ease-out .66s both; }
+/* Opacity and scale on the perspective window can flatten the nested 3D
+   drum. The shutters provide the reveal; the wall only settles vertically. */
+@keyframes wallEnter { from { transform:translateY(28px); } to { transform:translateY(0); } }
+@keyframes lineEnter { from { transform:translateY(115%); } to { transform:translateY(0); } }
+@keyframes cueEnter { from { opacity:0; } to { opacity:.62; } }
 
 @keyframes hero-fade {
   from {
@@ -220,17 +235,6 @@
   }
   to {
     opacity: 1;
-  }
-}
-
-@keyframes hero-drop {
-  from {
-    opacity: 0;
-    transform: translateY(-150px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -258,6 +262,12 @@
   background: linear-gradient(to right, transparent, var(--mist-400));
   animation: cue-slide 2.1s var(--ease-expo) infinite;
 }
+.storyLink { position:absolute; z-index:6; left:clamp(1.5rem,3vw,3rem); bottom:clamp(.75rem,2.5svh,1.75rem); display:flex; align-items:center; gap:32px; min-height:44px; font-size:12px; color:#cbdaf0; border-bottom:1px solid #8fa9cc55; }
+.storyLink > span { font-size:19px; transition:transform .2s ease-out; }
+.storyLink:hover > span { transform:translateY(4px); }
+.storyLink:focus-visible { outline:2px solid #a9c7fa; outline-offset:6px; }
+:global(html[data-intro="loading"]) .storyLink { opacity:0; }
+:global(html[data-intro="opening"]) .storyLink { animation:hero-fade .6s ease-out .66s both; }
 
 @keyframes cue-slide {
   0% {
@@ -296,16 +306,16 @@
        desktop one and the copy has to come up to meet it — at the desktop's 35%
        the wall ends around y 350 and the type does not start until 506, which
        reads as two unrelated halves of a screen. */
-    top: 39%;
+    top: 33%;
   }
 
   .floor {
-    top: 37%;
+    top: 31%;
     height: 62%;
   }
 
   .copy {
-    top: 58%;
+    top: 52%;
   }
 }
 
@@ -326,6 +336,11 @@
   }
 }
 
+@media (max-width: 480px) {
+  .title { font-size:clamp(1.45rem,7.3vw,2rem); }
+  .storyLink { font-size:11px; left:7vw; gap:24px; }
+}
+
 /* ---------- 6. Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .stage,
@@ -339,12 +354,20 @@
   }
 
   .caption,
-  .title {
-    animation: none;
+  .title,
+  .viewport,
+  .cue,
+  .storyLink {
+    animation: none !important;
+    opacity: 1 !important;
   }
+
+  .viewport { transform:none !important; }
 
   .cue-line {
     animation: none;
     opacity: 0.7;
   }
+  .titleLine > span { animation:none !important; transform:none !important; }
+  .storyLink > span { transition:none; }
 }

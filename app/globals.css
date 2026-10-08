@@ -1,4 +1,9 @@
-@import "tailwindcss";
+@import "tailwindcss" source(none);
+/* Only application sources: browser logs and generated exports must not
+   become watched inputs and trigger a rebuild on every animation frame. */
+@source ".";
+@source "../components";
+@source "../lib";
 
 /* ============================================================
    HR VISTA 3.0 — DESIGN BRIEF V4
@@ -113,6 +118,10 @@
 /* --- Base --- */
 html {
   scroll-behavior: smooth;
+}
+
+html.lenis {
+  scroll-behavior: auto;
 }
 
 body {

@@ -12,11 +12,14 @@
 # Next.js build output
 /.next/
 /.next-production/
+/.next-before-motion-recovery/
 /out/
 
 # Production build
 /build
 /dist
+/.playwright-cli/
+/output/playwright/
 
 # Debug logs
 npm-debug.log*

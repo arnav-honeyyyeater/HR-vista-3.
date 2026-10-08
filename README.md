@@ -20,7 +20,8 @@ npm run check:preview
 
 ## Pages and behavior
 
-- `/`: CHRIST intro (once per session, skippable), preserved hero, three travel chapters, edition timeline, closing download action.
+- `/`: dark CHRIST / HR VISTA intro (once per session, skippable), shutter reveal into the draggable photo wall, three travel chapters, edition timeline, people, scroll-driven sponsor staircase, closing download action.
+- `/sponsors`: sponsor concepts, the same 3D staircase, and a live brand-name preview. Confirmed sponsors remain to be announced.
 - `/#lavasa`, `/#journey`, `/#mumbai`, `/#editions`, `/#edition-1` through `/#edition-3`, `/#next`: direct story links.
 - `/work`: chronological archive with original edition photography, photo selection and native-dialog lightboxes.
 - `/brochure?page=11`: complete 12-page reader, deep links, keyboard navigation and zoom.
@@ -28,7 +29,8 @@ npm run check:preview
 
 `Journey.tsx` orchestrates the story with GSAP ScrollTrigger; `JourneyGlobe.tsx` is a lazy-loaded Three.js enhancement. The regional map is an original schematic, not a road route or an exact entrance location. Globe boundaries come from Natural Earth (see the provenance note in `public/media/journey`).
 
-Important content and controls stay in HTML. Reduced motion disables the intro and globe and presents the route without scroll scrubbing. WebGL creation failure leaves the CSS globe and SVG map available. Rendering pauses when offscreen or the tab is hidden; GPU work stops once the map replaces the globe. Native page scroll drives the timeline alongside the existing Lenis provider.
+Important content and controls stay in HTML. Reduced motion skips the intro, removes automatic movement and presents the route without scroll scrubbing. WebGL creation failure leaves the CSS globe and SVG map available. Rendering pauses when offscreen or the tab is hidden; GPU work stops once the map replaces the globe. Native page scroll drives the timeline alongside the existing Lenis provider.
+The globe's logos are hidden until a quick back-and-forth shake. Both marks appear together, then dissolve into drifting slices. Space/Enter on the globe and the “Give it a shake” button offer the same discovery. Reduced motion keeps a static, temporary reveal and presents sponsor cards as an ordinary gallery; changing the preference also stops wall autoplay and smooth scrolling immediately. See `docs/MOTION-REFINEMENT.md` for the triggers and browser verification.
 
 ## Content
 
