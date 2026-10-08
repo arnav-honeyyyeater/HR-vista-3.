@@ -18,7 +18,7 @@ import styles from "./Hero.module.css";
  *   radius      570 px — each panel sits `translateZ(−570px)` from the drum's
  *               axis with `transform-origin: 50% 50% 570px`
  *   facing      `rotateY(−k·30°)` per panel, the whole drum pre-turned 180°
- *   culling     the near half of the drum is dropped (see `cull` below)
+ *   culling     panels outside the projected view are dropped (see `cull` below)
  *
  * WHY IT LOOKS LIKE THAT
  *   Perspective 500 against radius 570 puts the viewer's eye essentially ON the
@@ -34,8 +34,7 @@ import styles from "./Hero.module.css";
  *   · Drag: `angle = angleAtGrab − dx · 0.5`, exactly the reference's ratio, fed
  *     through the same overdamped spring (stiffness 100, damping 30) so the wall
  *     lags the hand slightly and settles without wobble. Released off-phase, the
- *     drum eases to the nearest framing — the reference does not do this, and
- *     without it its wall can come to rest short of both screen edges.
+ *     drum eases to the nearest framing for a consistent resting composition.
  *   · Idle: one framing every `DWELL_MS`, on the same spring. The reference is
  *     inert unless dragged and leans on its panels being video for life; ours are
  *     stills, so the drum steps — but only between framings, never resting
@@ -97,14 +96,7 @@ const SPRING_C = 30;
 /**
  * Hold on one framing before stepping to the next, and the drum's rest phase.
  *
- * WHY THE DRUM RESTS ON A MULTIPLE OF `STEP`
- * A twelve-sided drum only fills the frame at the angles where one of its faces
- * is exactly edge-on — that face is the one that smears out to the screen edge.
- * Half a step off, the outermost face still facing the viewer sits at 75° rather
- * than 90°, projects ~270px short, and the wall retreats from both edges into a
- * centred band on a black field. The reference avoids this by never turning at
- * all; we step between framings and always land on one, so the wall is either
- * full-bleed or visibly mid-turn, and never parked in the flat in-between.
+ * Rest on a multiple of `STEP` so a photograph is centred after each turn.
  */
 const DWELL_MS = 4600;
 /** Quiet period after a drag before the stepping resumes. */
@@ -113,19 +105,14 @@ const RESUME_MS = 6000;
 const MAX_DT = 1 / 30;
 
 /**
- * Net Y-rotation of panel `k` when the drum sits at `drumAngle`, folded into
- * (−180, 180]. A panel is on the viewer's side of the drum — and so is culled —
- * once this passes ±90°.
+ * Net Y-rotation of panel `k`, folded into [−180, 180).
  */
 const netAngle = (k: number, drumAngle: number) =>
   ((((drumAngle - k * STEP) % 360) + 540) % 360) - 180;
 
-const facesViewer = (k: number, drumAngle: number) => {
-  const n = netAngle(k, drumAngle);
-  // Inclusive: a panel exactly edge-on is kept, because at that angle it is the
-  // huge smeared panel at the end of the wall rather than a sliver to discard.
-  // The tolerance covers the spring's residue so an edge-on panel cannot flicker
-  // in and out while the drum sits at rest (see the snap in `frame`).
+const inOpeningArc = (k: number) => {
+  const n = netAngle(k, START);
+  // Conservative server-rendered pose, before the responsive geometry is known.
   return n >= -90.01 && n <= 90.01;
 };
 
@@ -153,7 +140,8 @@ export function Hero() {
   useEffect(() => {
     const stage = stageRef.current;
     const drum = drumRef.current;
-    if (!stage || !drum) return;
+    const viewport = drum?.parentElement;
+    if (!stage || !drum || !viewport) return;
 
     let angle = START; // rendered angle
     let target = START; // spring's target
@@ -167,28 +155,37 @@ export function Hero() {
     let startAngle = 0;
     let resumeAt = 0;
     let culledMask = -1;
+    let radius = 0;
+    let perspective = 0;
+    let halfPanel = 0;
+    let halfView = 0;
 
     /**
-     * Hide the half of the drum that faces away from the eye.
-     *
-     * The reference relies on `backface-visibility: hidden` for this, and the
-     * math says it should work — a panel whose accumulated Y-rotation is past
-     * 90° has its back to the viewer. Blink does not cull these reliably though
-     * (a panel whose back is turned is still painted whenever it happens to sit
-     * in front of the eye), and that is exactly the case on phones, where the
-     * drum's radius is smaller than the perspective distance. Left alone, the
-     * near wall sweeps across the screen as giant flat portraits and the band
-     * silhouette is destroyed.
-     *
-     * So the cull is done here, from the angle this component already knows.
-     * The bound is INCLUSIVE at ±90°: a panel exactly edge-on is not culled by
-     * the reference either, and it is not a bug — it is the enormous smeared
-     * panel at each end of the wall, and the wall looks flat without it.
+     * Cull in perspective space. At ±90° an outer panel still covers the screen:
+     * hiding it by angle makes the wall blink during each drag or idle step.
+     * Keep it until both horizontal corners lie outside the same view plane.
+     * Testing before perspective division also handles corners behind the eye.
      */
     const cull = () => {
       let next = 0;
       for (let k = 0; k < COUNT; k++) {
-        if (facesViewer(k, angle)) next |= 1 << k;
+        const radians = netAngle(k, angle) * Math.PI / 180;
+        const sin = Math.sin(radians);
+        const cos = Math.cos(radians);
+        // The eye is displaced from the drum axis by the perspective distance.
+        if (radius + perspective * cos <= 0) continue;
+        const x = -radius * sin;
+        const depth = perspective + radius * cos;
+        const leftX = x - halfPanel * cos;
+        const rightX = x + halfPanel * cos;
+        const leftDepth = depth - halfPanel * sin;
+        const rightDepth = depth + halfPanel * sin;
+        if (leftDepth <= 0 && rightDepth <= 0) continue;
+        if (perspective * leftX < -halfView * leftDepth &&
+            perspective * rightX < -halfView * rightDepth) continue;
+        if (perspective * leftX > halfView * leftDepth &&
+            perspective * rightX > halfView * rightDepth) continue;
+        next |= 1 << k;
       }
       if (next === culledMask) return;
       culledMask = next;
@@ -202,7 +199,18 @@ export function Hero() {
       drum.style.transform = `rotateY(${angle.toFixed(3)}deg)`;
       cull();
     };
-    draw();
+    const resize = () => {
+      const geometry = getComputedStyle(viewport);
+      radius = parseFloat(geometry.getPropertyValue("--radius"));
+      perspective = parseFloat(geometry.perspective);
+      halfPanel = viewport.clientWidth / 2;
+      // A small overscan keeps rounding at the clip edge from toggling panels.
+      halfView = stage.clientWidth / 2 + 2;
+      draw();
+    };
+    resize();
+    const resizeObserver = new ResizeObserver(resize);
+    resizeObserver.observe(stage);
 
     const preference = window.matchMedia("(prefers-reduced-motion: reduce)");
     let reduced = preference.matches;
@@ -248,9 +256,7 @@ export function Hero() {
       vel += (-SPRING_K * (angle - target) - SPRING_C * vel) * dt;
       angle += vel * dt;
 
-      // Land EXACTLY, don't asymptote. A spring never quite arrives, and at a
-      // framing the residue leaves the edge-on panels a hair off ±90° — enough
-      // that they can flicker in and out of the cull while the drum is at rest.
+      // Land exactly rather than leaving the spring to drift around its target.
       if (Math.abs(angle - target) < 0.002 && Math.abs(vel) < 0.002) {
         angle = target;
         vel = 0;
@@ -290,10 +296,7 @@ export function Hero() {
       if (!dragging) return;
       dragging = false;
       stage.classList.remove(styles["is-dragging"]!);
-      // Let go anywhere and the drum eases to the nearest framing rather than
-      // resting wherever the hand stopped. This is the one place we improve on
-      // the reference: released off-phase, its wall sits short of both edges
-      // until the next drag.
+      // Let go anywhere and the drum eases to the nearest centred photograph.
       target = Math.round(target / STEP) * STEP;
       resumeAt = performance.now() + RESUME_MS;
       try {
@@ -327,6 +330,7 @@ export function Hero() {
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
+      resizeObserver.disconnect();
       preference.removeEventListener("change", updatePreference);
       stage.removeEventListener("pointerenter", onEnter);
       stage.removeEventListener("pointerleave", onLeave);
@@ -375,7 +379,7 @@ export function Hero() {
                     "--d": `${(k * 0.2).toFixed(2)}s`,
                     // Seat the cull in the server-rendered markup too, so the
                     // near wall never flashes across the screen before hydration.
-                    visibility: facesViewer(k, START) ? undefined : "hidden",
+                    visibility: inOpeningArc(k) ? undefined : "hidden",
                   } as CSSProperties
                 }
               >
@@ -385,7 +389,8 @@ export function Hero() {
                     src={panel.src}
                     alt=""
                     draggable={false}
-                    loading={facesViewer(k, START) ? "eager" : "lazy"}
+                    // Every panel can enter the view during the first drag.
+                    loading="eager"
                     fetchPriority={k === 6 ? "high" : "auto"}
                     width={300}
                     height={420}
