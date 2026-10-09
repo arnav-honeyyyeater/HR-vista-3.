@@ -3,8 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // A live dev preview must not overwrite the production chunks being reviewed.
-  distDir: process.env.NODE_ENV === "production" ? ".next-production" : ".next",
+  // Vercel expects the standard .next output directory.
+  // Locally, a production build uses .next-production so dev preview is not overwritten.
+  distDir: process.env.VERCEL ? ".next" : (process.env.NODE_ENV === "production" ? ".next-production" : ".next"),
 
   // Pin the tracing root to this project. Without it Next walks up, finds an
   // unrelated lockfile in the user's home directory and treats that as the
