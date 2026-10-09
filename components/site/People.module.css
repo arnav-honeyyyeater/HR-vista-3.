@@ -36,6 +36,12 @@
 .initialEcho { position:absolute; color:transparent; -webkit-text-stroke:1px #a1b9fa; opacity:.22; }
 .nodeFloat > .initialEcho { scale:1.75; translate:14% 33%; }
 .nodeFloat > i { position:absolute; inset:7%; border:1px solid currentColor; border-radius:inherit; opacity:.12; }
+.portrait { position:absolute; inset:0; z-index:2; display:block; width:100%; height:100%; object-fit:cover; object-position:50% 35%; opacity:0; transition:opacity .2s ease-out; }
+.portrait[data-loaded=true] { opacity:1; }
+.portrait[data-loaded=true] ~ :is(.initialLetters,.initialEcho,.glyphTrack,.waveform) { visibility:hidden; }
+.portrait[data-loaded=true] ~ :is(.initialLetters,.initialEcho,.glyphTrack,.waveform),.portrait[data-loaded=true] ~ :is(.initialLetters,.glyphTrack,.waveform) * { animation:none !important; }
+.portrait[data-loaded=true] ~ .nodeNumber { z-index:3; padding:2px 5px; border-radius:8px; background:#0a182cc9; color:#fff; opacity:1; }
+.portrait[data-loaded=true] ~ .personNumber { z-index:3; padding:2px 6px; border-radius:3px; background:#0a182cc9; color:#fff; }
 .networkAnnotation { position:absolute; left:61%; bottom:0; font-size:8px; line-height:1.7; letter-spacing:.15em; color:#a0b3d3; }
 .stageFoot { display:flex; justify-content:space-between; align-items:center; gap:24px; position:relative; z-index:3; border-top:1px solid #7289b13b; padding-top:24px; font-size:9px; letter-spacing:.1em; }
 .stageFoot > span { display:flex; align-items:center; gap:10px; }

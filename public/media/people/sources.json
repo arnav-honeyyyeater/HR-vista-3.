@@ -1,0 +1,65 @@
+[
+  {
+    "name": "Prof. Shankar Iyer",
+    "profileUrl": "https://www.linkedin.com/in/shankarhiyer/",
+    "portrait": "/media/people/shankar-iyer.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "f4b692b46e7f3294aa4a943e04d90598254e02af7a8b659248ea22f721a547c9"
+  },
+  {
+    "name": "Prof. Akhil Paul",
+    "profileUrl": "https://www.linkedin.com/in/akhilpaulk/",
+    "portrait": "/media/people/akhil-paul.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "c5a4676abe3874431db31db737ea60726769df152506a790988f35df9510a643"
+  },
+  {
+    "name": "Rushda Siddiqui",
+    "profileUrl": "https://www.linkedin.com/in/rushda-siddiqui-41b85b226/",
+    "portrait": "/media/people/rushda-siddiqui.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "077c9b289832da00eabd084a7b7eaa336d220935fa3e604ed5d764883f2bc8f7"
+  },
+  {
+    "name": "Shyambahadur Prajapati",
+    "profileUrl": "https://www.linkedin.com/in/shyamprajapati/",
+    "portrait": "/media/people/shyambahadur-prajapati.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "c1f2db1c0d04ad90b5b043f73f81ee6a8dd3013c98562faede82445260047c4b"
+  },
+  {
+    "name": "Fr. Lijo Thomas",
+    "profileUrl": "https://www.linkedin.com/in/lijo-thomas-1b4459218/",
+    "portrait": "/media/people/lijo-thomas.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "41926c3e79c5c53df3e6bf34c267b9e634860253d21b95e0682937b92182c19f"
+  },
+  {
+    "name": "Fr. Justin P Varghese",
+    "profileUrl": "https://www.linkedin.com/in/justin-p-varghese-2661351a3/",
+    "portrait": "/media/people/justin-varghese.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "26d6aea700606351e2e7d4c181e2e1376935d50d5b3148ff83d06f5c808a3c9b"
+  },
+  {
+    "name": "Arnav Sharma",
+    "profileUrl": "https://www.linkedin.com/in/arnav-sharmaaa/",
+    "portrait": "/media/people/arnav-sharma.webp",
+    "retrieved": "2026-10-09",
+    "width": 400,
+    "height": 400,
+    "sha256": "6670be5f8f9af0dda7b1aa24cb3a541e169fe8a94581b64097c5f3ffb5ff7e99"
+  }
+]

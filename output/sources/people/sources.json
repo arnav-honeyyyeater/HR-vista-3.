@@ -1,0 +1,70 @@
+[
+  {
+    "name": "Prof. Shankar Iyer",
+    "profileUrl": "https://www.linkedin.com/in/shankarhiyer/",
+    "imageUrl": "https://media.licdn.com/dms/image/v2/D5603AQE125cgmYgEjQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1729833350664?e=1793232000&v=beta&t=ARn92fBrULxdeDl0YtJhKB4ou1GXpuHmSk8InA5JM5w",
+    "file": "shankar-iyer.jpeg",
+    "attribution": "LinkedIn profile visible Profile photo; opened directly at supplied profile URL",
+    "identityEvidence": "Profile title and heading Shankar Iyer; headline says Head Centre for Placements & Career Guidance @ Christ University - Lavasa",
+    "retrieved": "2026-10-09",
+    "sha256": "081F019D4C53008D6871EADF0C9561B423C3CA37FC79D886A6603AF78138D49A"
+  },
+  {
+    "name": "Prof. Akhil Paul",
+    "profileUrl": "https://www.linkedin.com/in/akhilpaulk/",
+    "imageUrl": "https://media.licdn.com/dms/image/v2/D5603AQFB6x59GeSsNQ/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1727482531602?e=1793232000&v=beta&t=Ftdmy-Axac6lFqIVIvix1PWJ_cbwYY1Nkfw5Doi7El4",
+    "file": "akhil-paul.jpeg",
+    "attribution": "LinkedIn profile visible Profile photo; opened directly at supplied profile URL",
+    "identityEvidence": "Profile title and heading Akhil Paul; headline says Placements Coordinator and Christ University Lavasa is listed",
+    "retrieved": "2026-10-09",
+    "sha256": "26993BA6D378D4E57D81143BDE53C7A782B71E66189557CA9575AB7B6F7C7BBB"
+  },
+  {
+    "name": "Rushda Siddiqui",
+    "profileUrl": "https://www.linkedin.com/in/rushda-siddiqui-41b85b226/",
+    "imageUrl": "https://media.licdn.com/dms/image/v2/D5603AQF9JR2uBKpqRA/profile-displayphoto-crop_800_800/B56Z9pjE71IQAI-/0/1784182233002?e=1793232000&v=beta&t=uSRgIPaJdCSCkrFeCHME3qQWPYhMdW1dIx17vhY_9gY",
+    "file": "rushda-siddiqui.png",
+    "attribution": "LinkedIn profile visible Profile photo; opened directly at supplied profile URL",
+    "identityEvidence": "Profile title and heading Rushda Siddiqui; headline says Former President, CPCG, CHRIST (Lavasa), and Christ University Pune Lavasa is listed",
+    "retrieved": "2026-10-09",
+    "sha256": "4C678CAE566E578572DECFD9750BCE331AAEB46FA4D18138F6F80A173905B4D9"
+  },
+  {
+    "name": "Shyambahadur Prajapati",
+    "profileUrl": "https://www.linkedin.com/in/shyamprajapati/",
+    "imageUrl": "https://media.licdn.com/dms/image/v2/D4D03AQHHRnyb82B5HQ/profile-displayphoto-crop_800_800/B4DZgH0XtSGgAI-/0/1752477827322?e=1793232000&v=beta&t=VoCg-Xe2b_w1IvdV62buigkwAjTotDE_alj2kPNrwBc",
+    "file": "shyambahadur-prajapati.png",
+    "attribution": "LinkedIn profile visible Profile photo; opened directly at supplied profile URL",
+    "identityEvidence": "Profile title and heading Shyambahadur Prajapati; profile lists GM Infotech",
+    "retrieved": "2026-10-09",
+    "sha256": "610FD0C8F04BAE7AF8430FADC0E81AB11AB7ABE2F13073D04C6E9E0E3A740F01"
+  },
+  {
+    "name": "Fr. Lijo Thomas",
+    "profileUrl": "https://www.linkedin.com/in/lijo-thomas-1b4459218/",
+    "file": "lijo-thomas.jpeg",
+    "identityEvidence": "Live profile title Lijo Thomas; Director/Dean, CHRIST University, Lavasa Campus; visible Profile photo",
+    "attribution": "Visible LinkedIn profile photo, downloaded through the browser media tool",
+    "retrieved": "2026-10-09",
+    "sha256": "f83a1b185e166a23c662a149fe4b214b8bec68ddb4deab87252d5ea1656a3027"
+  },
+  {
+    "name": "Fr. Justin P Varghese",
+    "profileUrl": "https://www.linkedin.com/in/justin-p-varghese-2661351a3/",
+    "file": "justin-varghese.jpeg",
+    "identityEvidence": "Live profile title Justin P Varghese; visible Profile photo at the existing linked profile",
+    "attribution": "Visible LinkedIn profile photo, downloaded through the browser media tool",
+    "retrieved": "2026-10-09",
+    "sha256": "fcaadb2f57ce2eb2d98055af05c4fe87fc3e12375af2409bf1e397960fc82225",
+    "imageUrl": "https://media.licdn.com/dms/image/v2/C5603AQG-wbh-okkhLw/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1644668499646?e=1793232000&v=beta&t=pGZh8OAgZa8iSNcOx_MAR3MvNNYhzZwonB2ZO7Upeyk"
+  },
+  {
+    "name": "Arnav Sharma",
+    "profileUrl": "https://www.linkedin.com/in/arnav-sharmaaa/",
+    "file": "arnav-sharma.jpeg",
+    "identityEvidence": "Signed-in profile Arnav Sharma; public profile URL arnav-sharmaaa; enlarged Profile image; replacement requested by the user",
+    "attribution": "Visible LinkedIn profile photo, downloaded through the browser media tool",
+    "retrieved": "2026-10-09",
+    "sha256": "00887e5f684bd417a9e2a7c8f5c0e94c0b1508a1b314b395bcdfdc131895231c"
+  }
+]

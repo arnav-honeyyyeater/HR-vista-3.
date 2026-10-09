@@ -10,7 +10,7 @@ import styles from "./People.module.css";
 
 const filters = ["Everyone", "Faculty & leadership", "Team & community"] as const;
 
-// The letters are a graphic identity for each connection, not portrait imagery.
+// Keep the original letter identity beneath each locally stored portrait.
 const nodePositions = [
   { x: 19, y: 23, turn: -12 },
   { x: 53, y: 13, turn: 9 },
@@ -23,6 +23,22 @@ const nodePositions = [
 
 function Initials({ value, echo = false }: { value: string; echo?: boolean }) {
   return <span className={echo ? styles.initialEcho : styles.initialLetters}>{[...value].map((letter, index) => <span key={`${letter}-${index}`} style={{ "--letter": index } as CSSProperties}>{letter}</span>)}</span>;
+}
+
+function Portrait({ src, position }: { src: string; position?: string }) {
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    const image = imageRef.current;
+    // A cached image can finish before hydration attaches its load handler.
+    if (image?.complete) {
+      setLoaded(image.naturalWidth > 0);
+      setFailed(image.naturalWidth === 0);
+    }
+  }, [src]);
+  if (failed) return null;
+  return <img ref={imageRef} className={styles.portrait} data-loaded={loaded} src={src} style={position ? { objectPosition: position } : undefined} alt="" width={400} height={400} loading="lazy" decoding="async" onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />;
 }
 
 export function People() {
@@ -106,7 +122,7 @@ export function People() {
         </svg>
         <div className={styles.signalCore} data-signal-core><span>✳</span><i /><i /></div>
         {people.map((person, index) => <div key={person.name} className={styles.networkNode} data-network-node style={{ "--node-x": `${nodePositions[index].x}%`, "--node-y": `${nodePositions[index].y}%`, "--node-turn": `${nodePositions[index].turn}deg`, "--node-delay": `${index * -.7}s` } as CSSProperties}>
-          <div className={styles.nodeFloat}><span className={styles.nodeNumber}>0{index + 1}</span><Initials value={person.initials} /><Initials value={person.initials} echo /><i /></div>
+          <div className={styles.nodeFloat}>{person.portrait && <Portrait key={person.portrait} src={person.portrait} position={person.portraitPosition} />}<span className={styles.nodeNumber}>0{index + 1}</span><Initials value={person.initials} /><Initials value={person.initials} echo /><i /></div>
         </div>)}
         <span className={styles.networkAnnotation}>DIFFERENT VOICES.<br />ONE SHARED MOMENTUM.</span>
       </div>
@@ -114,7 +130,7 @@ export function People() {
     </div>
 
     <div id="people-directory" className={styles.directory}>
-      <div className={styles.directoryHeading}><h3>The people<br /><em>behind it.</em></h3><p>A look at the people who helped shape the previous chapter of HR VISTA.</p></div>
+      <div className={styles.directoryHeading}><h3>The people<br /><em>behind it.</em></h3><p>Faculty, organisers and the people behind the HR VISTA website.</p></div>
       <div className={styles.toolbar}>
         <div className={styles.filters} role="group" aria-label="Filter the people directory">{filters.map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}>{value}</button>)}</div>
         <span className={styles.count} role="status" aria-live="polite">{String(shown.length).padStart(2, "0")} PEOPLE</span>
@@ -124,13 +140,13 @@ export function People() {
           const index = people.indexOf(person);
           return <motion.article layout={!reduced} key={person.name} className={styles.person} data-person-signal style={{ "--person": index, "--signal-delay": `${index * -.45}s` } as CSSProperties} initial={reduced ? false : { y: 35 }} whileInView={{ y: 0 }} viewport={{ once: true, amount: .15 }} transition={{ duration: .55, delay: Math.min(index * .045, .18) }}>
             <a href={person.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${person.name} on LinkedIn (opens in a new tab)`}>
-              <div className={styles.personArt} aria-hidden="true"><span className={styles.personNumber}>0{index + 1}</span><div className={styles.glyphTrack}><Initials value={person.initials} /><Initials value={person.initials} echo /></div><div className={styles.waveform}>{Array.from({ length: 13 }, (_, bar) => <i key={bar} style={{ "--bar": bar, "--bar-height": `${12 + ((bar * 7 + index * 3) % 24)}px` } as CSSProperties} />)}</div></div>
+              <div className={styles.personArt} aria-hidden="true">{person.portrait && <Portrait key={person.portrait} src={person.portrait} position={person.portraitPosition} />}<span className={styles.personNumber}>0{index + 1}</span><div className={styles.glyphTrack}><Initials value={person.initials} /><Initials value={person.initials} echo /></div><div className={styles.waveform}>{Array.from({ length: 13 }, (_, bar) => <i key={bar} style={{ "--bar": bar, "--bar-height": `${12 + ((bar * 7 + index * 3) % 24)}px` } as CSSProperties} />)}</div></div>
               <div className={styles.identity}><span className={styles.group}>{person.group}</span><h4>{person.name}</h4><p>{person.role}</p><span className={styles.profile}>LinkedIn profile <b aria-hidden="true">↗</b></span></div>
             </a>
           </motion.article>;
         })}
       </motion.div>
-      <p className={styles.source}>People and roles from <a href="https://www.hrvista.live/contact" target="_blank" rel="noopener noreferrer">HR VISTA 2.0</a>. The 3.0 organising committee will be confirmed separately.</p>
+      <p className={styles.source}>Faculty and community roles from <a href="https://www.hrvista.live/contact" target="_blank" rel="noopener noreferrer">HR VISTA 2.0</a>; website credit for the current 3.0 site. The 3.0 organising committee will be confirmed separately.</p>
     </div>
 
     <div id="guests" className={styles.guestEmpty} data-guest-signal>
